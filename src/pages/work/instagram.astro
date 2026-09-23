@@ -1,0 +1,299 @@
+---
+import CaseStudy from "../../layouts/CaseStudy.astro";
+
+const facts = [
+  { k: "Role", v: "Community Operations Specialist" },
+  { k: "Focus", v: "Account access, support to product" },
+  { k: "Scope", v: "9 NA + 3 Arabic queues, ~145k tickets a month" },
+  { k: "Year", v: "2017 · Full-time" },
+];
+---
+
+<CaseStudy
+  title="Surfacing insights on hacked accounts · Cat Tran"
+  description="A root-cause analysis of why restored Instagram accounts kept getting re-hacked, and the fixes that broke the loop."
+  client="Instagram"
+  heading="Surfacing insights on hacked accounts"
+  lede="At Instagram I funneled patterns from the support queue into the right product teams. My area was account access. One pattern stood out: accounts we restored kept getting hacked again within days. I ran the root-cause analysis that found out why, and recommended the change that closed the loop."
+  facts={facts}
+>
+  <section>
+    <h2 class="eyebrow">The pattern</h2>
+    <p>
+      Support restored hacked accounts by resetting the password and sending the
+      person back in through a recovery checkpoint. It worked, until it didn't. A
+      real share of those people wrote back in a few days later, hacked again.
+      Restoring the same account two or three times was common enough to look
+      like a broken process rather than bad luck.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">The investigation</h2>
+    <p>
+      Nobody had asked me to look into it, but the repeats bothered me. I pulled
+      every account that had reported a hack more than once and walked their
+      action histories one by one. The tell was consistent: soon after we
+      restored an account, a password reset went out to the email address on
+      file.
+    </p>
+    <p>
+      Back in SQL, I charted password resets over time. They spiked hard once a
+      week, always around the same hour. That is not what people do. It looked
+      automated.
+    </p>
+    <p>
+      I built a dashboard to show the shape and scale of it and took it to the
+      Instagram product review group. By early 2017, automated scripts were
+      compromising more than 260,000 accounts a week through this gap, then using
+      them to post spam and nudity.
+    </p>
+    <figure class="shot">
+      <svg
+        class="diagram"
+        viewBox="0 0 680 286"
+        role="img"
+        aria-labelledby="chart-t chart-d"
+      >
+        <title id="chart-t">Weekly password-reset volume</title>
+        <desc id="chart-d">
+          A line chart with a low, flat baseline of password resets broken by six
+          sharp spikes, one exactly every seven days at the same hour.
+        </desc>
+        <line x1="46" y1="40" x2="46" y2="234" stroke="#E6DDCC" stroke-width="1"
+        ></line>
+        <line x1="46" y1="234" x2="654" y2="234" stroke="#E6DDCC"
+        stroke-width="1"></line>
+        <path
+          d="M46,234 L46,231 63,232 70,58 77,229 170,231 180,58 187,228 280,232 290,58 297,230 390,231 400,58 407,229 500,232 510,58 517,230 610,231 620,58 627,230 654,231 L654,234 Z"
+          fill="#CB5E3C"
+          fill-opacity="0.08"
+          stroke="none"></path>
+        <polyline
+          points="46,231 63,232 70,58 77,229 170,231 180,58 187,228 280,232 290,58 297,230 390,231 400,58 407,229 500,232 510,58 517,230 610,231 620,58 627,230 654,231"
+          fill="none"
+          stroke="#CB5E3C"
+          stroke-width="2"
+          stroke-linejoin="round"
+          stroke-linecap="round"></polyline>
+        <line x1="180" y1="46" x2="290" y2="46" stroke="#6F6252"
+        stroke-width="1"></line>
+        <line x1="180" y1="46" x2="180" y2="52" stroke="#6F6252"
+        stroke-width="1"></line>
+        <line x1="290" y1="46" x2="290" y2="52" stroke="#6F6252"
+        stroke-width="1"></line>
+        <text x="235" y="40" text-anchor="middle" font-size="11" fill="#6F6252"
+          >7 days</text
+        >
+        <text x="46" y="24" font-size="12" fill="#6F6252">
+          Password reset volume
+        </text>
+        {
+          [70, 180, 290, 400, 510, 620].map((x, i) => (
+            <text
+              x={x}
+              y="252"
+              text-anchor="middle"
+              font-size="11"
+              fill="#6F6252"
+            >
+              {i + 1}
+            </text>
+          ))
+        }
+        <text x="350" y="272" text-anchor="middle" font-size="11" fill="#6F6252">
+          consecutive weeks
+        </text>
+      </svg>
+      <figcaption>
+        A recreation of the dashboard I built to show how automated the resets
+        were.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">The loop</h2>
+    <p>
+      The recovery checkpoint only re-secured one thing: the password. If the
+      attacker also controlled the person's email, which was common right after a
+      large credential breach somewhere else on the internet, they still had
+      everything they needed. A script would request a password reset from the
+      email, walk through it, and change the password back. The person would
+      write in, we would restore the account, and the cycle started over. Every
+      wave of automated resets reached the queue a day or two later as a flood of
+      new hacked-account tickets.
+    </p>
+    <p>
+      The only real fix was to move the account onto an email address the
+      attacker did not control. The checkpoint never asked for that.
+    </p>
+    <figure class="shot">
+      <svg
+        class="diagram"
+        viewBox="0 0 680 300"
+        role="img"
+        aria-labelledby="loop-t loop-d"
+      >
+        <title id="loop-t">The hacked-account loop</title>
+        <desc id="loop-d">
+          A four-step cycle: an account gets hacked, the person contacts support,
+          support resets the password, the attacker resets it again from the
+          hacked email, and the account is hacked once more.
+        </desc>
+        <defs>
+          <marker
+            id="ig-arrow"
+            viewBox="0 0 10 10"
+            refX="8"
+            refY="5"
+            markerWidth="6.5"
+            markerHeight="6.5"
+            orient="auto-start-reverse"
+          >
+            <path
+              d="M2 1L8 5L2 9"
+              fill="none"
+              stroke="#CB5E3C"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </marker>
+        </defs>
+
+        <g fill="#F8F4ED" stroke="#2A2724" stroke-width="1.25">
+          <rect x="25" y="44" width="185" height="50" rx="9"></rect>
+          <rect x="247" y="44" width="185" height="50" rx="9"></rect>
+          <rect x="469" y="44" width="185" height="50" rx="9"></rect>
+          <rect x="180" y="232" width="320" height="50" rx="9"></rect>
+        </g>
+
+        <g font-size="12" fill="#2A2724" text-anchor="middle">
+          <text x="117" y="73">
+            <tspan fill="#CB5E3C" font-weight="600">1</tspan> Account gets hacked
+          </text>
+          <text x="339" y="73">
+            <tspan fill="#CB5E3C" font-weight="600">2</tspan> Person contacts support
+          </text>
+          <text x="561" y="73">
+            <tspan fill="#CB5E3C" font-weight="600">3</tspan> Support resets the password
+          </text>
+          <text x="340" y="261">
+            <tspan fill="#CB5E3C" font-weight="600">4</tspan> Attacker resets it from
+            the hacked email
+          </text>
+        </g>
+
+        <g fill="none" stroke="#CB5E3C" stroke-width="1.75">
+          <path d="M210,69 L243,69" marker-end="url(#ig-arrow)"></path>
+          <path d="M432,69 L465,69" marker-end="url(#ig-arrow)"></path>
+          <path
+            d="M561,94 C561,165 520,232 503,244"
+            marker-end="url(#ig-arrow)"></path>
+          <path
+            d="M180,244 C100,232 66,165 100,96"
+            marker-end="url(#ig-arrow)"></path>
+        </g>
+      </svg>
+      <figcaption>
+        Restore, re-compromise via email, repeat. Recreated for this case study.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">The recommendation</h2>
+    <p>
+      I took the analysis to the product team with a recommendation: add a
+      captcha to the password-reset request, so an automated script could not
+      walk through it.
+    </p>
+    <p>
+      Growth pushed back. Adding friction to password resets was not worth the
+      cost: legitimate resets vastly outnumber malicious ones, and a captcha
+      would slow down real users far more than it stopped scripts.
+    </p>
+    <p>
+      The team converged on a different fix instead: build a secure-email flow
+      into the hacked lock, so recovery moves the account onto an email the
+      attacker does not control rather than adding friction to every reset. That
+      change was prioritized for the start of 2017. The same work fed into the
+      two-factor rollout I helped ship soon after.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Impact</h2>
+    <p>
+      The pattern tracked external credential breaches. A leaked email-and-password
+      pair often unlocked both accounts at once, so every large breach elsewhere
+      sent a wave of these cases to the queue. The dashboard made the scale
+      legible for the first time.
+    </p>
+    <ul class="stats">
+      <li>
+        <span class="stat-v">260k+</span>
+        <span class="stat-k">
+          accounts a week taken over by password-reset scripts, the scale the
+          dashboard surfaced
+        </span>
+      </li>
+      <li>
+        <span class="stat-v">Declined</span>
+        <span class="stat-k">
+          a captcha on password resets, Growth's call: the friction cost more
+          than it blocked
+        </span>
+      </li>
+      <li>
+        <span class="stat-v">Q1 2017</span>
+        <span class="stat-k">
+          a secure-email flow for the hacked lock, prioritized on the roadmap
+          instead
+        </span>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">The wider account-access work</h2>
+    <p>
+      The re-hacking loop was one thread. I owned the North America and Arabic
+      account-access queues and pushed fixes across the surface.
+    </p>
+    <ul class="hard">
+      <li>
+        <strong>Account-change emails.</strong> The notifications were spread
+        across formats and servers, and their design made accidental disavows
+        easy. I made the case for consolidating them onto one server and rewrote
+        the templates, cutting 5,500 tickets a month and up to 38 hours of rep
+        work.
+      </li>
+      <li>
+        <strong>Tiered support for sensitive accounts.</strong> After a run of
+        reps mistakenly granting access to high-profile accounts, I
+        project-managed a specialist queue for PR-sensitive requests: the go-live
+        plan, the workflow, the training. Volume dropped over 90% and rep-caused
+        escalations went from more than ten a half to one.
+      </li>
+      <li>
+        <strong>Two-factor authentication.</strong> I led the North America
+        rollout of 2FA and in-app login support to 100% of users and pulled the
+        impact data. The in-app form, which blocks requests for accounts a
+        device has never logged into, took global rep accuracy from 92% to
+        around 97%, halved identifiable fake requests, and cut North America
+        handling time by 12%. 2FA added 1.1 million users.
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">What I took from it</h2>
+    <p>
+      This is the case for putting an operations person close to product. The
+      pattern was sitting in the queue the whole time. Nobody had connected the
+      repeat reports to a root cause, and once the data was on the table the
+      product teams moved on it fast.
+    </p>
+  </section>
+</CaseStudy>

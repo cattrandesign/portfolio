@@ -1,0 +1,266 @@
+---
+import CaseStudy from "../../layouts/CaseStudy.astro";
+
+const facts = [
+  { k: "Role", v: "Sole product designer" },
+  { k: "Team", v: "CEO, CTO, Customer Success lead" },
+  { k: "Timeline", v: "8 weeks · Contract, 2024" },
+];
+
+const compare = {
+  a: [
+    "Key numbers only, no charts",
+    "Metrics stacked in a left sidebar",
+    "Campaign results as plain counts",
+  ],
+  b: [
+    "The same numbers plus bar charts",
+    "Metrics across the top in a wide band",
+    "Campaign results drawn as bars",
+  ],
+};
+
+const insights = [
+  "The metrics that mattered were clicks, replies, opt-outs, received, opens, and flagged as spam. Everything else was noise on the home screen.",
+  "Creating a new Audience — their word for a list — was the single most-used action in the product.",
+  "Numbers read faster than charts for the day-to-day calls these teams make.",
+  "Audiences and Campaigns were linked in people's heads but disconnected on screen.",
+];
+
+const mvp = [
+  "Pulled the six priority metrics up and grouped them at two levels — Account and Campaign — so the screen answers “how are we doing overall?” and “how is this campaign doing?” without a drill-in.",
+  "Cut the charts and led with the numbers.",
+  "Added prominent Clone CTAs on Audiences, making the most common action — reuse and refine a list for the next campaign — one click.",
+  "Tied Audiences to Campaigns visually, so the relationship the team already carried in their heads showed up in the layout.",
+];
+---
+
+<CaseStudy
+  title="Daisychain dashboard · Cat Tran"
+  description="A prescriptive home dashboard for Daisychain's text-campaign platform, designed solo in eight weeks through rapid prototyping and close work with the founding team."
+  client="Daisychain"
+  heading="Designing a dashboard in eight weeks"
+  lede="Daisychain is a texting platform progressive organizations use to run outreach campaigns, automate follow-ups, and sync data across their tools. Their customer success team had become the onboarding bottleneck &mdash; every new client needed a CSM to walk them through a blank dashboard. I had eight weeks, as the only designer, to make that first screen prescriptive enough that clients could orient themselves."
+  facts={facts}
+>
+  <section>
+    <h2 class="eyebrow">Context</h2>
+    <p>
+      Daisychain's homepage was empty on purpose &mdash; the team leaned on
+      customer success managers to run every onboarding by hand. That didn't
+      scale, and it capped how fast they could take on clients. They brought me
+      on for eight weeks to design two things: an interactive onboarding
+      experience and a more prescriptive dashboard. This case study is about the
+      dashboard.
+    </p>
+    <p>
+      I was the only product designer, working directly with the CEO, the CTO,
+      and the Customer Success lead. I delivered the MVP for both flows.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">The constraint shaped the method</h2>
+    <p>
+      Eight weeks, one designer, and the only people available to talk to were
+      three executives and two power users. A normal discovery cycle wasn't on
+      the table, so the plan was: prototype early, use the prototypes
+      <em>as</em> the research instrument, and keep stakeholders close enough
+      that feedback came back in days, not weeks.
+    </p>
+    <p>Two things made that work:</p>
+    <ul>
+      <li>
+        The CTO had already sketched a lo-fi wireframe in FigJam. It wasn't a
+        spec, but it showed me how the team thought about the information, and it
+        saved me the first week.
+      </li>
+      <li>
+        The CS lead had personally onboarded almost every client. She became my
+        stand-in for the user between interviews &mdash; I pressure-tested
+        decisions against her the way I'd normally use a research pool.
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Prototyping to learn, not to present</h2>
+    <p>
+      Instead of one polished direction, I built two mid-fidelity dashboards and
+      showed them side by side. A balanced comparison earns its keep on a tight
+      timeline: participants stop reacting to polish and start telling you which
+      specific parts they'd actually use, and you get a real decision out of one
+      session instead of a round of vague feedback followed by another prototype.
+    </p>
+
+    <figure class="shot">
+      <img
+        src="/work/daisychain/dash-a.webp"
+        alt="Daisychain dashboard, version A: a welcome heading, then a left sidebar listing key metrics as plain numbers with week-over-week arrows, and panels for recent campaigns, audiences, pathways and automations. No charts."
+        width="1728"
+        height="1787"
+        loading="lazy"
+      />
+      <figcaption>Dash A &mdash; numbers only, metrics in a left rail.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <img
+        src="/work/daisychain/dash-b.webp"
+        alt="Daisychain dashboard, version B: the same metrics shown across the top of the screen, with recent campaign results drawn as horizontal bar charts."
+        width="1728"
+        height="1636"
+        loading="lazy"
+      />
+      <figcaption>Dash B &mdash; the same data with charts added.</figcaption>
+    </figure>
+
+    <div class="compare">
+      <div class="before">
+        <p class="compare-label">Dash A</p>
+        <ul>{compare.a.map((x) => <li>{x}</li>)}</ul>
+      </div>
+      <div class="after">
+        <p class="compare-label">Dash B</p>
+        <ul>{compare.b.map((x) => <li>{x}</li>)}</ul>
+      </div>
+    </div>
+
+    <p>I ran both past the two power users and the stakeholders against three questions:</p>
+    <ol>
+      <li>Which metrics matter?</li>
+      <li>Which actions matter?</li>
+      <li>How should the data be shown?</li>
+    </ol>
+    <p class="note">
+      Two participants instead of the three-to-five I'd want. I relied on the CS
+      lead to fill the gap and weighted her read against the trends from the
+      interviews rather than treating either as the whole picture.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">What came back</h2>
+    <p>Affinity mapping the sessions produced four insights:</p>
+    <ol>{insights.map((x) => <li>{x}</li>)}</ol>
+
+    <figure class="shot">
+      <img
+        src="/work/daisychain/affinity-map.webp"
+        alt="A FigJam affinity map with dozens of sticky notes grouped under headings like 'Campaign bar chart is confusing', 'Audiences and Campaigns should be shown together', 'Numbers are more important than charts', and 'Dash A is better' / 'Dash B is better'."
+        width="2500"
+        height="2474"
+        loading="lazy"
+      />
+      <figcaption>
+        Notes from the two power users and the stakeholders, grouped. The
+        clusters that decided the design: numbers over charts, and Audiences
+        shown together with Campaigns.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Stakeholder management</h2>
+    <p>
+      The founders wanted to be <em>in</em> the process, not briefed at
+      milestones. With three of them on an eight-week project, that could easily
+      have turned into thrash. What I did:
+    </p>
+    <ul>
+      <li>Gave all three comment access to the working file.</li>
+      <li>
+        Left my own comments through the design &mdash; explaining why I'd made
+        each call and asking for feedback on specific things &mdash; so responses
+        came back pointed instead of scattered.
+      </li>
+      <li>
+        Folded their comments and the research into each iteration, and showed
+        which change traced to which input.
+      </li>
+    </ul>
+
+    <figure class="shot">
+      <img
+        src="/work/daisychain/revisions.webp"
+        alt="A dashboard iteration covered in overlapping Figma comment pins from three reviewers, clustered on the stats sidebar, the campaigns list, the audiences panel and the pathways section."
+        width="853"
+        height="828"
+        loading="lazy"
+      />
+      <figcaption>
+        One revision with feedback coming in. Directing comments to specific
+        elements kept the notes actionable.
+      </figcaption>
+    </figure>
+
+    <p>
+      Where it strained: the three didn't always align with each other before
+      commenting, so I'd get contradictory notes and have to broker them in the
+      file.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">The MVP</h2>
+    <p>From the research and the feedback, I:</p>
+    <ol>{mvp.map((x) => <li>{x}</li>)}</ol>
+
+    <figure class="shot">
+      <img
+        src="/work/daisychain/mvp.webp"
+        alt="The final Daisychain dashboard: an Account Activity band with the six priority metrics and a 7 / 30 / 60-day toggle, a Recent Campaigns list showing received, clicked, replied and opted-out percentages with a Clone button per campaign, and paired Pathways and Automations panels below."
+        width="1728"
+        height="1473"
+        loading="lazy"
+      />
+      <figcaption>
+        The MVP. Priority metrics grouped at the account level, campaign results
+        inline with a Clone action, Audiences and Campaigns paired.
+      </figcaption>
+    </figure>
+
+    <p>
+      Since the blank dashboard was the whole problem, I also designed the
+      pre-first-campaign empty state deliberately: more guidance, clear CTAs into
+      the first campaign, no dead space.
+    </p>
+
+    <figure class="shot" style="max-width: 320px">
+      <img
+        src="/work/daisychain/mobile.webp"
+        alt="The dashboard on mobile: a single column with the Account Activity card, then each recent campaign's metrics in a two-by-two grid above its Clone button."
+        width="393"
+        height="1406"
+        loading="lazy"
+      />
+      <figcaption>The same hierarchy carried down to one column on mobile.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Where it landed</h2>
+    <p>The dashboard shipped as the MVP. At handoff, the team expected it to:</p>
+    <ul>
+      <li>cut the CSM time each new client requires &mdash; the reason I was brought on;</li>
+      <li>make onboarding less dependent on a person, so sales isn't gated on CSM capacity;</li>
+      <li>help clients make faster campaign calls from top metrics at a glance, in fewer clicks.</li>
+    </ul>
+    <p class="note">
+      These were projections at handoff. I'd want post-launch numbers on CSM
+      onboarding hours to know how it actually moved.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">What I'd do differently</h2>
+    <p>
+      Structure the revision process from day one: define how many rounds, get
+      stakeholders to align with <em>each other</em> before feedback reaches me,
+      and label every share with where we are. &ldquo;Still exploring&rdquo; and
+      &ldquo;converging&rdquo; need different kinds of feedback, and I wasn't
+      always signalling which I wanted. The design held up; the process around it
+      is what I'd tighten.
+    </p>
+  </section>
+</CaseStudy>

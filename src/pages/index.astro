@@ -1,57 +1,159 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Nav from "../components/Nav.astro";
 import SquiggleLine from "../components/SquiggleLine.astro";
 
 const meta = [
   { label: "Based in", parts: ["Ellenville, New York"] },
   { label: "Currently", parts: ["Product Designer @ Healthie"] },
   {
-    label: "Previously",
-    parts: ["NYU Langone Health", "Trestle Collaborative", "Zapier", "Meta"],
-  },
-  {
     label: "Building",
-    parts: ["Clarity", "AI-native", "design systems", "information architecture"],
+    parts: ["Clarity", "AI-native design", "Design systems"],
   },
 ];
 
-const navLinks = [
-  { href: "#case-studies", label: "Case studies" },
-  { href: "#clients", label: "Clients" },
-  { href: "#about", label: "About" },
-  { href: "#contact", label: "Contact" },
+const caseStudies = [
+  {
+    client: "NYU Langone Health",
+    slug: "/work/nyu-langone",
+    title: "Helping patients find the right care",
+    meta: "Contract · 2023",
+    tint: "#580F8B",
+    logo: { src: "/logos/nyu-langone.png", width: 560, height: 300 },
+  },
+  {
+    client: "Enterprise app",
+    slug: "/work/design-system",
+    title: "Piloting an AI-native design system workflow",
+    meta: "Product design · 2026, abstracted",
+    tint: "#E7E3D6",
+    ratio: "4 / 3",
+    logo: {
+      src: "/logos/enterprise-banners.svg",
+      alt: "Illustration of four generic banners: info, success, warning, and error",
+      width: 800,
+      height: 600,
+      cover: true,
+    },
+  },
+  {
+    client: "Daisychain",
+    slug: "/work/daisychain",
+    title: "Designing a dashboard in eight weeks",
+    meta: "Contract · 2024",
+    tint: "#F6F4F4",
+    logo: {
+      src: "/logos/daisychain-dashboard.jpg",
+      alt: "Daisychain dashboard",
+      width: 1356,
+      height: 678,
+      cover: true,
+      edge: true,
+    },
+  },
+  {
+    client: "KettleOS",
+    slug: "/work/kettleos",
+    title: "Rethinking the admin information architecture and design system",
+    meta: "Contract · 2021",
+    tint: "#E7DACD",
+  },
+  {
+    client: "Instagram",
+    slug: "/work/instagram",
+    title: "Surfacing insights on hacked accounts",
+    meta: "Full-time · 2017",
+    tint: "#E1306C",
+    logo: { src: "/logos/instagram.jpg", width: 740, height: 740, cover: true },
+  },
+  {
+    client: "New York State of Health",
+    minor: true,
+    title: "Simplifying the insurance marketplace",
+    meta: "Self-initiated · 2022",
+    tint: "#DFE8DD",
+  },
+  {
+    client: "Zapier",
+    minor: true,
+    title: "Making automation feel approachable",
+    meta: "Full-time · 2020",
+    tint: "#FFFDF9",
+    logo: { src: "/logos/zapier.png", width: 1140, height: 360, edge: true },
+  },
 ];
 
 const sections = [
+  { id: "about", k: "About" },
+  { id: "contact", k: "Contact" },
+];
+
+const testimonials = [
   {
-    id: "case-studies",
-    k: "Case studies",
-    t: "Selected work in kind, scalable service design.",
+    quote:
+      "During the 2 years I worked with Cat, she was instrumental in helping NYU Langone grow and mature our UX Research practice with new methods and a holistic approach. Cat implemented several large-scale efforts including conducting tree test analyses to optimize the main site navigation and launching a site-wide user feedback survey that has led to the uptake of several new initiatives.",
+    name: "Meredith Blake",
+    role: "UX Design, NYU Langone Health",
   },
-  { id: "clients", k: "Clients", t: "Teams I've partnered with along the way." },
-  { id: "about", k: "About", t: "A designer who likes untangling things." },
-  { id: "contact", k: "Contact", t: "Let's find a way to work together." },
+  {
+    quote:
+      "Collaborating with Cat has been so effortless, and I quickly felt as if we'd worked together for ages. She readily adapted to the various needs of the project, and her passion for the organizing issues central to it really shone throughout.",
+    name: "Jierui Fang",
+    role: "UX Design, Trestle Collaborative",
+  },
+  {
+    quote:
+      "Working with Cat was a game-changer for our team. She possesses an exceptional ability to understand and connect with users, creating experiences that truly make an impact. An absolute pleasure to collaborate with!",
+    name: "Tanja Thorsteinsson",
+    role: "UX Design, NYU Langone Health",
+  },
+  {
+    quote:
+      "Cat designed a large system to automate our front office daily operations and saved us countless hours of time. Her enthusiasm, knowledge, and flexibility are some of the reasons I keep working with her. She is very easy to work with and a great communicator. Brainstorming with her is a breeze. If you have the opportunity to work with Cat, go for it!",
+    name: "Angeliki Mavrikou",
+    role: "Enterprise Systems, Mindpath Health",
+  },
+  {
+    quote:
+      "What truly distinguishes Cat is her ability to balance user needs and business goals, particularly in making tech accessible and equitable.",
+    name: "Brandon Sanchez",
+    role: "UX Research, Reddit",
+  },
+  {
+    quote:
+      "Working with Cat was the step I needed to take my online presence to the next level. From the start, I was thoughtfully guided through her research and development process, building on my core concept, ideals and most importantly, my future goals for the business.",
+    name: "Linh Nguyen",
+    role: "Manager, Au Lac Restaurant",
+  },
+  {
+    quote:
+      "I wasn't proud to share my website until Cat redesigned it. I linked my website out to promoters following the redesign, and since then, I've booked to open for Sofi Tukker, Megan Thee Stallion, Twitchcon, and Society of Women Engineers' WE23, the world's largest conference for women in engineering and technology. They definitely browsed the hell out of my website and social channels cause they referenced it a lot.",
+    name: "DJ Lani Love",
+    role: "",
+  },
+  {
+    quote:
+      "Cat is the kind of professional that is equal part mentor, educator, and comrade, imbuing her work with a deep sense of empathy necessary to understand a wide gamut of users (even when you think you've servicing a monolithic demographic). What I might have crudely accomplished over time by hitting a piece of granite with a fork, Cat provided a chisel, a strong hammer, and an experienced delicacy.",
+    name: "Nick Concklin",
+    role: "Creative Director, Fantasy Life",
+  },
+  {
+    quote:
+      "Cat was fantastic to work with. A detail-oriented and creative thinker, she helped push our product forward. She asked questions I wouldn't think of, which led to the best experience possible.",
+    name: "Eliot Crist",
+    role: "CEO, Fantasy Life",
+  },
+  {
+    quote:
+      "Cat coordinated a robust volunteer tech support program for the Lawyers' Committee for Civil Right's Election Protection Hotline efforts in 2024. She recruited, onboarded, and scaled our tech volunteers to successfully support 4,000 legal volunteers. Throughout the process Cat showed commitment, skill, follow-through, and generally improved and streamlined the program. It was a pleasure working with her and I hope our paths cross again in the future.",
+    name: "John Winters",
+    role: "IT Lead, Election Protection Hotline",
+  },
 ];
 ---
 
 <Layout>
-  <a class="skip" href="#hero">Skip to content</a>
-
-  <nav aria-label="Primary">
-    <a class="logo" href="#hero" aria-label="Cat Tran — back to top">
-      <span aria-hidden="true">ct</span>
-    </a>
-
-    <ul class="nav-group">
-      {
-        navLinks.map((l) => (
-          <li>
-            <a href={l.href}>{l.label}</a>
-          </li>
-        ))
-      }
-    </ul>
-  </nav>
+  <Nav />
 
   <SquiggleLine
     orientation="vertical"
@@ -59,17 +161,21 @@ const sections = [
     side="left"
     rail={260}
     inset="var(--edge)"
-    amplitude={52}
-    reach={0.2}
+    amplitude={64}
+    reach={0.19}
+    loops={2.6}
+    strands={1}
+    colors={["#2A2724"]}
     anchor=".logo"
   />
 
-  <main class="wrap">
+  <main id="main" class="wrap">
     <section id="hero" class="hero">
       <div class="headline">
         <h1>Hi! I'm Cat.</h1>
         <p class="tagline">
-          I design kind, scalable services for mission-driven organizations.
+          I design kind, effortless experiences and robust systems for rapidly
+          scaling organizations.
         </p>
       </div>
 
@@ -77,9 +183,7 @@ const sections = [
         {
           meta.map((row) => (
             <div class="row">
-              <dt>
-                {row.label} <span class="arrow">&rarr;</span>
-              </dt>
+              <dt>{row.label}</dt>
               <dd>
                 {row.parts.map((p, i) => (
                   <>
@@ -101,135 +205,241 @@ const sections = [
       </dl>
     </section>
 
+    <section id="case-studies" class="case-studies">
+      <h2 class="eyebrow">Case studies</h2>
+      <ol class="cs-grid">
+        {
+          caseStudies.map((c) => {
+            const Tag = c.slug ? "a" : "div";
+            return (
+              <li class:list={["cs-card", { "is-minor": c.minor }]}>
+                <Tag class="cs-link" href={c.slug}>
+                  <div
+                    class:list={["cs-thumb", { "has-edge": c.logo?.edge }]}
+                    style={`--tint:${c.tint};${c.ratio ? `aspect-ratio:${c.ratio};` : ""}`}
+                  >
+                    {c.logo ? (
+                      <img
+                        class:list={["cs-logo", { "is-cover": c.logo.cover }]}
+                        src={c.logo.src}
+                        alt={c.logo.alt ?? c.client}
+                        width={c.logo.width}
+                        height={c.logo.height}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span class="cs-name">{c.client}</span>
+                    )}
+                  </div>
+                  <div class="cs-caption">
+                    <h3 class="cs-title">{c.title}</h3>
+                    <span class="cs-meta">{c.meta}</span>
+                  </div>
+                </Tag>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </section>
+
+    <section id="testimonials" class="testimonials">
+      <h2 class="eyebrow">Testimonials</h2>
+      <div class="carousel">
+        <button
+          type="button"
+          class="car-arrow car-prev"
+          id="car-prev"
+          aria-label="Previous testimonials"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M15 5l-7 7 7 7"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+        </button>
+        <div class="car-viewport">
+          <div class="car-track" id="car-track">
+            {
+              testimonials.slice(0, 3).map((t) => (
+                <figure class="testimonial">
+                  <div class="t-bubble">
+                    <blockquote>
+                      <p>&ldquo;{t.quote}&rdquo;</p>
+                    </blockquote>
+                  </div>
+                  <figcaption>
+                    <span class="t-name">{t.name}</span>
+                    {t.role && <span class="t-role">{t.role}</span>}
+                  </figcaption>
+                </figure>
+              ))
+            }
+          </div>
+        </div>
+        <button
+          type="button"
+          class="car-arrow car-next"
+          id="car-next"
+          aria-label="Next testimonials"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M9 5l7 7-7 7"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+        </button>
+      </div>
+    </section>
+
     {
       sections.map((s) => (
         <section id={s.id} class="panel">
-          <p class="eyebrow">{s.k}</p>
-          <p class="line">{s.t}</p>
+          <h2 class="eyebrow">{s.k}</h2>
         </section>
       ))
     }
   </main>
 </Layout>
 
-<style>
-  :global(:root) {
-    --edge: clamp(24px, 4vw, 72px);
+<script define:vars={{ testimonials }}>
+  const track = document.getElementById("car-track");
+  const prevBtn = document.getElementById("car-prev");
+  const nextBtn = document.getElementById("car-next");
+  const total = testimonials.length;
+  let index = 0;
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
   }
-  :global(html) {
-    scroll-padding-top: 88px;
+
+  const pageSize = 3;
+
+  function page(start) {
+    return Array.from(
+      { length: pageSize },
+      (_, i) => testimonials[(start + i) % total],
+    );
   }
-  @media (prefers-reduced-motion: no-preference) {
-    :global(html) {
-      scroll-behavior: smooth;
+
+  function cardsHtml(list) {
+    return list
+      .map(
+        (t) => `
+          <figure class="testimonial">
+            <div class="t-bubble">
+              <blockquote><p>&ldquo;${escapeHtml(t.quote)}&rdquo;</p></blockquote>
+            </div>
+            <figcaption>
+              <span class="t-name">${escapeHtml(t.name)}</span>
+              ${t.role ? `<span class="t-role">${escapeHtml(t.role)}</span>` : ""}
+            </figcaption>
+          </figure>`,
+      )
+      .join("");
+  }
+
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+  let animating = false;
+
+  function go(direction) {
+    if (animating) return;
+
+    const nextIndex =
+      (index + direction * pageSize + total * pageSize) % total;
+    const stacked = getComputedStyle(track).flexDirection === "column";
+
+    if (prefersReducedMotion || stacked) {
+      index = nextIndex;
+      track.innerHTML = cardsHtml(page(index));
+      return;
     }
-  }
-  :global(body) {
-    background: #f8f4ed;
+
+    animating = true;
+    const viewportWidth = track.parentElement.clientWidth;
+    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+    const cardWidth = (viewportWidth - gap * (pageSize - 1)) / pageSize;
+    const shift = viewportWidth + gap;
+
+    const current = page(index);
+    const incoming = page(nextIndex);
+    track.innerHTML = cardsHtml(
+      direction > 0 ? [...current, ...incoming] : [...incoming, ...current],
+    );
+    for (const card of track.children) {
+      card.style.flex = `0 0 ${cardWidth}px`;
+    }
+
+    track.style.transition = "none";
+    track.style.transform =
+      direction > 0 ? "translateX(0)" : `translateX(${-shift}px)`;
+    void track.offsetWidth;
+    track.style.transition = "";
+    track.style.transform =
+      direction > 0 ? `translateX(${-shift}px)` : "translateX(0)";
+
+    const fallback = setTimeout(settle, 700);
+    function settle(e) {
+      if (e && e.target !== track) return;
+      clearTimeout(fallback);
+      track.removeEventListener("transitionend", settle);
+      index = nextIndex;
+      track.style.transition = "none";
+      track.style.transform = "";
+      track.innerHTML = cardsHtml(page(index));
+      void track.offsetWidth;
+      track.style.transition = "";
+      animating = false;
+    }
+    track.addEventListener("transitionend", settle);
   }
 
-  .skip {
-    position: absolute;
-    left: 16px;
-    top: -48px;
-    z-index: 20;
-    background: #2a2724;
-    color: #f8f4ed;
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-family:
-      ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    font-size: 14px;
-    transition: top 0.15s ease;
-  }
-  .skip:focus {
-    top: 12px;
-  }
+  prevBtn.addEventListener("click", () => go(-1));
+  nextBtn.addEventListener("click", () => go(1));
+</script>
 
-  nav {
-    position: fixed;
-    inset: 0 0 auto 0;
-    z-index: 10;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 24px;
-    padding: 20px clamp(28px, 5vw, 88px) 20px calc(var(--edge) + 36px);
-    pointer-events: none;
-    font-family:
-      ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  }
-  .nav-group {
-    pointer-events: auto;
-    display: flex;
-    gap: 26px;
-    margin: 0;
-    padding: 11px 20px;
-    list-style: none;
-    background: rgba(248, 244, 237, 0.92);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 999px;
-  }
-  nav a {
-    text-decoration: none;
-    white-space: nowrap;
-  }
-  .nav-group a {
-    color: #2a2724;
-    font-size: 15px;
-  }
-  .nav-group a:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-  .logo {
-    pointer-events: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    flex: none;
-    background: #72a085;
-    border-radius: 50%;
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 17px;
-    letter-spacing: 0.03em;
-    color: #2a2724;
-  }
-  nav a:focus-visible,
-  .skip:focus-visible {
-    outline: 2px solid #2a2724;
-    outline-offset: 4px;
-    border-radius: 2px;
-  }
-  .logo:focus-visible {
-    border-radius: 50%;
-  }
-
+<style>
   .wrap {
     position: relative;
     z-index: 2;
-    max-width: 700px;
+    max-width: 1080px;
     margin: 0 auto;
-    padding: 0 clamp(28px, 5vw, 88px) 0 calc(var(--edge) + clamp(96px, 11vw, 176px));
+    padding: 0 clamp(28px, 5vw, 88px) 0
+      calc(var(--edge) + clamp(240px, 16vw, 268px));
     color: #2a2724;
   }
   .hero {
-    min-height: 100vh;
+    min-height: 88vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    text-align: center;
     gap: 40px;
   }
   .headline {
+    max-width: 640px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 8px;
   }
   h1 {
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: var(--font-serif);
     font-weight: 400;
     font-size: clamp(40px, 6vw, 72px);
     line-height: 1.05;
@@ -238,45 +448,55 @@ const sections = [
     color: #cb5e3c;
   }
   .tagline {
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: var(--font-serif);
     font-size: clamp(20px, 2.4vw, 28px);
     line-height: 1.4;
     letter-spacing: -0.01em;
     margin: 0;
-    max-width: 26ch;
+    max-width: 40ch;
     color: #2a2724;
   }
   .meta {
     margin: 0;
+    max-width: 920px;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    font-family:
-      ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    font-size: 14.5px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: 10px;
+    font-family: var(--font-sans);
+    font-size: 14px;
   }
   .row {
     display: flex;
-    gap: 8px;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px 16px 12px;
+    border: 1px solid #e6ddcc;
+    border-radius: 12px;
+    background: #fdfbf6;
+    text-align: center;
   }
   dt {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
     color: #a8451e;
-    white-space: nowrap;
-  }
-  .arrow {
-    color: #6f6252;
+    margin-bottom: 4px;
   }
   dd {
     margin: 0;
     color: #2a2724;
+    font-weight: 500;
   }
   dd b {
-    font-weight: 600;
+    font-weight: 500;
   }
   .sep {
-    width: 10px;
-    height: 10px;
-    margin: 0 8px;
+    width: 9px;
+    height: 9px;
+    margin: 0 6px;
     fill: #a8451e;
     vertical-align: -1px;
   }
@@ -292,48 +512,287 @@ const sections = [
     border: 0;
   }
   .panel {
-    min-height: 100vh;
+    min-height: 42vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    padding: 6vh 0;
   }
   .eyebrow {
-    font-family:
-      ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: var(--font-sans);
+    font-weight: 500;
     font-size: 13px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: #a8451e;
-    margin: 0 0 12px;
-  }
-  .line {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(24px, 3.2vw, 38px);
-    line-height: 1.4;
     margin: 0;
   }
 
+  .case-studies {
+    padding: 9vh 0 7vh;
+  }
+  .cs-grid {
+    list-style: none;
+    margin: 44px 0 0;
+    padding: 0;
+    columns: 2;
+    column-gap: clamp(20px, 3vw, 44px);
+  }
+  .cs-card {
+    break-inside: avoid;
+    margin-bottom: clamp(34px, 5vw, 60px);
+  }
+  .cs-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .cs-link .cs-thumb {
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+  a.cs-link:hover .cs-thumb {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(42, 39, 36, 0.12);
+  }
+  a.cs-link:hover .cs-title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  a.cs-link:focus-visible {
+    outline: 2px solid #2a2724;
+    outline-offset: 6px;
+    border-radius: 16px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    a.cs-link:hover .cs-thumb {
+      transform: none;
+    }
+  }
+  .cs-thumb {
+    background: var(--tint, #e5ddcd);
+    border-radius: 14px;
+    aspect-ratio: 2 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .cs-card:nth-child(3n + 2) .cs-thumb {
+    aspect-ratio: 1 / 1;
+  }
+  .cs-card:nth-child(4n + 1) .cs-thumb {
+    aspect-ratio: 4 / 3;
+  }
+  .cs-name {
+    font-family: var(--font-serif);
+    font-size: clamp(17px, 2.1vw, 24px);
+    line-height: 1.22;
+    letter-spacing: -0.01em;
+    text-align: center;
+    text-wrap: balance;
+    color: #2a2724;
+    padding: 24px;
+  }
+
+  .cs-thumb.has-edge {
+    outline: 1px solid #e6ddcc;
+    outline-offset: -1px;
+  }
+  .cs-logo {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 72%;
+    max-height: 56%;
+    object-fit: contain;
+  }
+  .cs-card.is-minor .cs-logo {
+    max-width: 50%;
+  }
+  .cs-logo.is-cover {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    object-fit: cover;
+  }
+
+  .cs-card.is-minor .cs-thumb {
+    aspect-ratio: 3 / 1;
+  }
+  .cs-card.is-minor .cs-name {
+    font-size: 15px;
+    padding: 16px;
+  }
+  .cs-card.is-minor .cs-caption {
+    margin-top: 11px;
+  }
+  .cs-card.is-minor .cs-title {
+    font-size: 15px;
+  }
+  .cs-card.is-minor .cs-meta {
+    font-size: 12px;
+  }
+
+  .cs-caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    margin-top: 15px;
+  }
+  .cs-title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(17px, 1.7vw, 21px);
+    line-height: 1.3;
+    margin: 0;
+    color: #2a2724;
+    text-wrap: balance;
+  }
+  .cs-meta {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: #6f6252;
+    white-space: nowrap;
+    flex: none;
+  }
+
   @media (max-width: 640px) {
-    :global(:root) {
-      --edge: 14px;
-    }
-    nav {
-      gap: 12px;
-      padding: 12px 16px 12px calc(var(--edge) + 22px);
-    }
-    .nav-group {
-      gap: 14px;
-      padding: 9px 14px;
-    }
-    .nav-group a {
-      font-size: 13px;
-    }
     .wrap {
       padding-left: calc(var(--edge) + 84px);
     }
-    .row {
+    .cs-grid {
+      columns: 1;
+    }
+    .cs-card .cs-thumb {
+      aspect-ratio: 2 / 1;
+    }
+    .cs-caption {
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
+    }
+    .cs-meta {
+      white-space: normal;
+    }
+  }
+</style>
+
+<style is:global>
+  .testimonials {
+    padding: 9vh 0 7vh;
+  }
+  .carousel {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(12px, 2vw, 24px);
+    margin-top: 44px;
+  }
+  .car-viewport {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .car-track {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(20px, 3vw, 44px);
+    width: 100%;
+    transition: transform 480ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .car-track {
+      transition: none;
+    }
+  }
+  .testimonial {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .t-bubble {
+    position: relative;
+    background: #fdfbf6;
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    padding: 20px 22px;
+  }
+  .t-bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 26px;
+    width: 16px;
+    height: 16px;
+    background: #fdfbf6;
+    border-left: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+    border-radius: 0 0 0 4px;
+    transform: rotate(-45deg);
+  }
+  .testimonial blockquote {
+    margin: 0;
+  }
+  .testimonial blockquote p {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.65;
+    color: #2a2724;
+  }
+  .testimonial figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 4px;
+  }
+  .t-name {
+    font-family: var(--font-serif);
+    font-size: 15px;
+    font-weight: 500;
+    color: #2a2724;
+  }
+  .t-role {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: #6f6252;
+  }
+  .car-arrow {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    margin-top: 96px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: none;
+    color: #5e8e72;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 150ms ease;
+  }
+  .car-arrow svg {
+    width: 32px;
+    height: 32px;
+  }
+  .car-arrow:hover {
+    color: #466d57;
+  }
+  .car-arrow:focus-visible {
+    outline: 2px solid #2a2724;
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 640px) {
+    .car-track {
+      flex-direction: column;
     }
   }
 </style>

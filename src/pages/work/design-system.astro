@@ -1,0 +1,530 @@
+---
+import CaseStudy from "../../layouts/CaseStudy.astro";
+
+const facts = [
+  { k: "Role", v: "Product Designer" },
+  { k: "Focus", v: "Design systems, component architecture" },
+  { k: "Year", v: "2026, abstracted" },
+];
+
+const auditQuestions = [
+  "Was it dismissible?",
+  "How many CTAs did it have?",
+  "Did it need a header?",
+  "How long did the copy run, longest and shortest?",
+  "Which icons were in use?",
+  "Which variants were actually used, and which could be dropped?",
+];
+
+---
+
+<CaseStudy
+  title="Piloting an AI-native design system workflow from spec to production code on an enterprise system serving 29 million end users · Cat Tran"
+  description="Researching, prototyping, and shipping my team's first designer-built production component, plus the eight-month-old token bug I found along the way."
+  client="Enterprise app"
+  heading="Piloting an AI-native design system workflow from spec to production code on an enterprise system serving 29 million end users"
+  lede="Using an inline banner component as the pilot, I used Claude Code to conduct industry research, audit our web repo for use cases, build an app to facilitate collaborative iteration, and worked with frontend to merge and migrate into production via Storybook."
+  facts={facts}
+>
+  <section>
+    <h2 class="eyebrow">Context</h2>
+    <p>
+      No designer on my team had taken a component from spec into production
+      code before. I picked the inline banner as the pilot: small, but used
+      everywhere, which made it a real test of owning the whole pipeline,
+      research through shipped code.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Learning from what exists</h2>
+    <p>
+      Rather than start from a blank canvas, I looked at how GitHub, Atlassian,
+      Adobe, and IBM handle the same pattern, sometimes called an alert,
+      sometimes an inline message. I used Claude to pull their documentation,
+      then had it recreate each pattern inside a real surface from our own app,
+      so I could judge the options in our actual UI instead of in isolation.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">The sandbox</h2>
+    <p>
+      To workshop the direction with the team, I built an interactive
+      prototype: an HTML sandbox with a dropdown for every property, corner
+      radius, color, type token, number of CTAs, each wired to our real
+      Tailwind tokens. The team could reconfigure the component live in design
+      review instead of reacting to static comps.
+    </p>
+    <figure class="shot">
+      <div class="sandbox-demo">
+        <form class="sandbox-controls" aria-label="Banner sandbox controls">
+          <div class="sandbox-field">
+            <label for="sb-radius">Corner radius</label>
+            <select id="sb-radius">
+              <option value="4">4px</option>
+              <option value="8" selected>8px</option>
+              <option value="12">12px</option>
+              <option value="20">20px</option>
+            </select>
+          </div>
+          <div class="sandbox-field">
+            <label for="sb-type">Type size</label>
+            <select id="sb-type">
+              <option value="14">14px</option>
+              <option value="16" selected>16px</option>
+              <option value="18">18px</option>
+            </select>
+          </div>
+          <div class="sandbox-field">
+            <label for="sb-icon-size">Icon size</label>
+            <select id="sb-icon-size">
+              <option value="16">16px</option>
+              <option value="20" selected>20px</option>
+              <option value="24">24px</option>
+            </select>
+          </div>
+          <div class="sandbox-field">
+            <label for="sb-fill">Fill color</label>
+            <select id="sb-fill">
+              <option value="#F6E4DE" selected>red-200</option>
+              <option value="#EDC9BD">red-300</option>
+              <option value="#FFFFFF">white</option>
+            </select>
+          </div>
+          <div class="sandbox-field">
+            <label for="sb-stroke">Stroke color</label>
+            <select id="sb-stroke">
+              <option value="#9A3B22" selected>red-600</option>
+              <option value="#5C2414">red-800</option>
+            </select>
+          </div>
+        </form>
+
+        <div class="sandbox-preview">
+          <div class="sb-banner" id="sb-banner">
+            <svg
+              class="sb-icon"
+              id="sb-icon"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle
+                class="sb-icon-ring"
+                cx="12"
+                cy="12"
+                r="9"
+                stroke-width="1.6"></circle>
+              <rect
+                class="sb-icon-mark"
+                x="11"
+                y="6.5"
+                width="2"
+                height="7"
+                rx="1"></rect>
+              <circle class="sb-icon-mark" cx="12" cy="16.5" r="1.2"
+              ></circle>
+            </svg>
+            <div class="sb-body">
+              <p class="sb-header-text" id="sb-header-text">Heads up</p>
+              <p class="sb-copy-text" id="sb-copy-text">
+                This banner is wired to the same tokens the real component
+                reads.
+              </p>
+              <div class="sb-ctas">
+                <button type="button" class="sb-btn sb-btn-primary">
+                  Primary
+                </button>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="sb-dismiss"
+              aria-label="Dismiss banner"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+      </div>
+      <figcaption>
+        A simplified rebuild of the sandbox: five dropdowns standing in for
+        the real one's full token set. The banner on the right responds
+        live, the same way it did in design review.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Grounding it in real usage</h2>
+    <p>
+      Before finalizing the API, I audited every existing instance of the
+      inline banner in our web repo:
+    </p>
+    <ul>
+      {auditQuestions.map((q) => <li>{q}</li>)}
+    </ul>
+    <p>
+      That, plus a look at accessibility and how competitors handled the same
+      cases, shaped the final properties. Nothing was a guess.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Challenge 1</h2>
+    <p>
+      We'd originally planned to drop the success variant in favor of a toast
+      pattern we barely used. Engineers pushed back: building a toast
+      component and migrating every success banner to it was a much bigger
+      project on its own, and folding it into this migration risked leaving
+      some banners in the old pattern. We kept success for a 1:1 migration and
+      left the platform-wide change for later.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Challenge 2</h2>
+    <p>
+      Since I'm not an engineer, frontend built guardrails around my PRs so
+      they could ship without becoming a bottleneck. They wrote a Claude
+      Skill that checked any PR against our repo's actual conventions
+      before a human ever looked at it, and tagged my PRs with a quarantine
+      label so reviewers knew to look closer until we'd ironed out the
+      pattern together.
+    </p>
+    <p>
+      Once it passed review, engineers ran a Chromatic audit simulating the new
+      component across a large share of the site's banners. It surfaced
+      something unplanned: engineers had been using inline and global banners
+      interchangeably, with no shared rule for when each applied. That pushed
+      us to finish the global banner and ship both together.
+    </p>
+    <p>
+      Shipping them together worked because of a call I'd made early on.
+      Inline and global have completely different usage guidelines, so they
+      stayed as two separate components, but I designed the global banner to
+      render identically to how the inline banner looks at that same width:
+      same anatomy, same responsive alignment rule. If anyone migrated a
+      banner to the wrong one, the mistake would produce a zero visual diff
+      in Chromatic, instead of a flag that just gets overridden.
+    </p>
+    <figure class="shot">
+      <svg
+        class="diagram"
+        viewBox="0 0 680 296"
+        role="img"
+        aria-labelledby="banner-t banner-d"
+      >
+        <title id="banner-t">Banner anatomy across widths</title>
+        <desc id="banner-d">
+          A generic recreation of the banner component: an icon, optional
+          header, body text, a dismiss control, and one or two CTAs. At full
+          width the primary CTA aligns right; at partial width it aligns left
+          and wraps below the text.
+        </desc>
+
+        <text
+          x="20"
+          y="22"
+          font-size="11"
+          font-weight="600"
+          letter-spacing="0.08em"
+          fill="#A8451E">FULL WIDTH</text>
+        <rect
+          x="20"
+          y="34"
+          width="640"
+          height="60"
+          rx="10"
+          fill="#F1ECDD"
+          stroke="#E6DDCC"></rect>
+        <circle cx="48" cy="64" r="9" fill="none" stroke="#2A2724" stroke-width="1.25"
+        ></circle>
+        <rect x="70" y="52" width="150" height="8" rx="4" fill="#6F6252"></rect>
+        <rect x="70" y="66" width="240" height="7" rx="3.5" fill="#D9D0BE"
+        ></rect>
+        <g stroke="#2A2724" stroke-width="1.4" stroke-linecap="round">
+          <line x1="638" y1="44" x2="646" y2="52"></line>
+          <line x1="646" y1="44" x2="638" y2="52"></line>
+        </g>
+        <rect x="458" y="53" width="72" height="22" rx="6" fill="none"
+        stroke="#2A2724" stroke-width="1.25"></rect>
+        <text x="494" y="67" font-size="10.5" fill="#2A2724" text-anchor="middle"
+          >Cancel</text
+        >
+        <rect x="538" y="53" width="90" height="22" rx="6" fill="#A8451E"></rect>
+        <text
+          x="583"
+          y="67"
+          font-size="10.5"
+          fill="#FFFFFF"
+          font-weight="600"
+          text-anchor="middle">Primary</text>
+        <text x="20" y="112" font-size="11" fill="#6F6252">
+          Primary CTA aligns right
+        </text>
+
+        <text
+          x="20"
+          y="150"
+          font-size="11"
+          font-weight="600"
+          letter-spacing="0.08em"
+          fill="#A8451E">PARTIAL WIDTH</text>
+        <rect
+          x="20"
+          y="162"
+          width="330"
+          height="96"
+          rx="10"
+          fill="#F1ECDD"
+          stroke="#E6DDCC"></rect>
+        <circle cx="48" cy="192" r="9" fill="none" stroke="#2A2724" stroke-width="1.25"
+        ></circle>
+        <rect x="70" y="180" width="140" height="8" rx="4" fill="#6F6252"></rect>
+        <rect x="70" y="194" width="200" height="7" rx="3.5" fill="#D9D0BE"
+        ></rect>
+        <g stroke="#2A2724" stroke-width="1.4" stroke-linecap="round">
+          <line x1="326" y1="172" x2="334" y2="180"></line>
+          <line x1="334" y1="172" x2="326" y2="180"></line>
+        </g>
+        <rect x="70" y="220" width="84" height="22" rx="6" fill="#A8451E"></rect>
+        <text
+          x="112"
+          y="234"
+          font-size="10.5"
+          fill="#FFFFFF"
+          font-weight="600"
+          text-anchor="middle">Primary</text>
+        <rect x="162" y="220" width="72" height="22" rx="6" fill="none"
+        stroke="#2A2724" stroke-width="1.25"></rect>
+        <text x="198" y="234" font-size="10.5" fill="#2A2724" text-anchor="middle"
+          >Cancel</text
+        >
+        <text x="20" y="280" font-size="11" fill="#6F6252">
+          Primary CTA aligns left, CTAs wrap below the text
+        </text>
+      </svg>
+      <figcaption>
+        A generic recreation, not the real UI. Same anatomy, shared by both
+        components on purpose.
+      </figcaption>
+    </figure>
+    <p>
+      I reviewed roughly a hundred Chromatic diffs. Production still surprised
+      us afterward: a conditional banner with a long message doesn't show up in
+      a diff if the condition isn't met, so some text ran bigger than we wanted
+      until we saw it live. Even a hundred diffs don't show the whole picture.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Challenge 3</h2>
+    <p>
+      While this was in flight, spacing across the product kept looking
+      slightly bigger than expected, in enough places that people assumed it
+      was just how things looked now. Claude Code helped me trace it to a
+      custom spacing scale quietly overriding our Tailwind scale, introduced
+      eight months earlier in an unreviewed PR by an engineer who had since
+      left. It wasn't a clean offset: depending on the value, it inflated
+      spacing by 2, 4, or 12 pixels.
+    </p>
+    <p>
+      Correcting the token itself would have rewritten the pixel values of
+      every component already merged onto our design system, not just the
+      ones still waiting to migrate onto it. Another engineer removed the
+      custom scale as a zero-diff change: he made sure nothing broke
+      overnight. From there, I opened a few more PRs to adjust the tokens
+      and put every button on a proper
+      spacing ramp, sized using research into how other systems scaled
+      theirs, and added a migration-only variant so a component moving onto
+      the corrected ramp could do so with zero visual diff first, leaving
+      where it actually landed on the new ramp as a separate decision for
+      later.
+    </p>
+    <p>
+      Raising it unblocked a lot of stalled work, including the CTA buttons
+      inside the banners I had just built. Bugs like that are easy to miss
+      because they don't just affect a component, they affect everything
+      nested inside it.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">What I took from it</h2>
+    <p>
+      This is the case for a designer owning the whole pipeline instead of
+      handing off at high-fidelity comps. Researching, prototyping against real
+      tokens, auditing usage, then building and shipping it myself meant
+      nothing got lost in translation, and it put me in the right position to
+      catch a bug that had nothing to do with the banner at all.
+    </p>
+  </section>
+</CaseStudy>
+
+<script>
+  const radius = document.getElementById("sb-radius") as HTMLSelectElement;
+  const type = document.getElementById("sb-type") as HTMLSelectElement;
+  const iconSize = document.getElementById("sb-icon-size") as HTMLSelectElement;
+  const fill = document.getElementById("sb-fill") as HTMLSelectElement;
+  const stroke = document.getElementById("sb-stroke") as HTMLSelectElement;
+
+  const banner = document.getElementById("sb-banner") as HTMLElement;
+  const headerText = document.getElementById("sb-header-text") as HTMLElement;
+  const copyText = document.getElementById("sb-copy-text") as HTMLElement;
+  const icon = document.getElementById("sb-icon") as unknown as SVGElement;
+
+  const headerLineHeight = 1.3;
+
+  function render() {
+    banner.style.borderRadius = `${radius.value}px`;
+
+    const size = Number(type.value);
+    const headerSize = size + 1;
+    copyText.style.fontSize = `${size}px`;
+    headerText.style.fontSize = `${headerSize}px`;
+
+    const iconPx = Number(iconSize.value);
+    icon.style.width = `${iconPx}px`;
+    icon.style.height = `${iconPx}px`;
+    icon.style.marginTop = `${(headerSize * headerLineHeight - iconPx) / 2}px`;
+
+    banner.style.backgroundColor = fill.value;
+    banner.style.borderColor = stroke.value;
+  }
+
+  [radius, type, iconSize, fill, stroke].forEach((el) =>
+    el.addEventListener("change", render),
+  );
+  render();
+</script>
+
+<style>
+  .sandbox-demo {
+    display: grid;
+    grid-template-columns: 176px 1fr;
+    gap: 26px;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--hairline);
+    background: #fff;
+  }
+  .sandbox-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .sandbox-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .sandbox-field label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--warm-grey);
+  }
+  .sandbox-field select {
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    color: var(--ink);
+    padding: 7px 9px;
+    border-radius: 8px;
+    border: 1px solid var(--hairline);
+    background: var(--paper);
+  }
+  .sandbox-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+  }
+
+  .sb-banner {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 40px 14px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--hairline);
+    background: #f1ecdd;
+  }
+
+  .sb-icon {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    color: var(--ink);
+  }
+  .sb-icon-ring {
+    fill: none;
+    stroke: currentColor;
+  }
+  .sb-icon-mark {
+    fill: currentColor;
+  }
+  .sb-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .sb-header-text {
+    margin: 0 0 4px;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 14.5px;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+  .sb-copy-text {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .sb-ctas {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .sb-btn {
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 6px 13px;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+  .sb-btn-primary {
+    border: 1px solid var(--terracotta-ink);
+    background: var(--terracotta-ink);
+    color: #fff;
+  }
+  .sb-dismiss {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 22px;
+    height: 22px;
+    line-height: 1;
+    border: none;
+    background: transparent;
+    color: var(--warm-grey);
+    font-size: 17px;
+    cursor: pointer;
+  }
+  .sb-dismiss:hover {
+    color: var(--ink);
+  }
+
+  @media (max-width: 640px) {
+    .sandbox-demo {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

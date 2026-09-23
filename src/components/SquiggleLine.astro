@@ -18,6 +18,8 @@ interface Props {
   amplitude?: number;
   /** How far each strand wanders along its axis, as a fraction of the axis length. */
   reach?: number;
+  /** How many full loops the scribble makes over its length. */
+  loops?: number;
   /** Number of overlapping strands. */
   strands?: number;
   /** Stroke colors, one per strand (last is drawn on top). */
@@ -44,6 +46,7 @@ const {
   height = 130,
   amplitude = 26,
   reach = 0.11,
+  loops = 3,
   strands = 3,
   colors = ["#72A085", "#CB5E3C", "#2A2724"],
   weight = 2,
@@ -75,6 +78,7 @@ const isRail = fixed && orientation === "vertical";
   data-height={height}
   data-amplitude={amplitude}
   data-reach={reach}
+  data-loops={loops}
   data-strands={strands}
   data-weight={weight}
   data-resolve-gap={resolveGap}
@@ -91,10 +95,15 @@ const isRail = fixed && orientation === "vertical";
         <path
           fill="none"
           stroke={c}
-          stroke-width={i === palette.length - 1 ? weight + 0.4 : weight}
+          stroke-width={
+            palette.length > 1 && i === palette.length - 1
+              ? weight + 0.4
+              : weight
+          }
           stroke-linecap="round"
           stroke-linejoin="round"
           vector-effect="non-scaling-stroke"
+          shape-rendering="geometricPrecision"
         />
       ))
     }
@@ -146,16 +155,8 @@ const isRail = fixed && orientation === "vertical";
 
 <script>
   type Strand = {
-    fL: number;
-    ph: number;
-    f2: number;
-    ph2: number;
-    f3: number;
-    ph3: number;
-    ax: number;
-    ay: number;
-    ax2: number;
-    ay2: number;
+    phase: number;
+    fMul: number;
     lane: number;
   };
 
@@ -170,6 +171,7 @@ const isRail = fixed && orientation === "vertical";
     cross: number;
     amplitude: number;
     reach: number;
+    loops: number;
     resolveGap: number;
     w: number;
     h: number;
@@ -182,6 +184,8 @@ const isRail = fixed && orientation === "vertical";
   const TAU = Math.PI * 2;
   const FEATHER = 0.34;
   const ANCHOR_SPAN = 0.16;
+  // Amount of secondary sway riding on the main loop (0 = perfect coil).
+  const WOBBLE = 0.14;
 
   function smooth(t: number) {
     if (t <= 0) return 0;
@@ -189,45 +193,32 @@ const isRail = fixed && orientation === "vertical";
     return t * t * (3 - 2 * t);
   }
 
-  function mulberry32(a: number) {
-    return function () {
-      a |= 0;
-      a = (a + 0x6d2b79f5) | 0;
-      let t = Math.imul(a ^ (a >>> 15), 1 | a);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-
   function makeStrands(count: number): Strand[] {
     const out: Strand[] = [];
     for (let k = 0; k < count; k++) {
-      const r = mulberry32(1337 + k * 9973);
+      const f = count > 1 ? k / (count - 1) : 0.5;
       out.push({
-        fL: 2.1 + r() * 1.7,
-        ph: r() * TAU,
-        f2: 0.6 + r() * 0.9,
-        ph2: r() * TAU,
-        f3: 3.4 + r() * 2.6,
-        ph3: r() * TAU,
-        ax: 0.65 + r() * 0.5,
-        ay: 0.6 + r() * 0.5,
-        ax2: 0.3 + r() * 0.3,
-        ay2: 0.35 + r() * 0.35,
-        lane: count === 1 ? 0 : (k / (count - 1)) * 2 - 1,
+        // Evenly staggered so the strands braid rather than scatter.
+        phase: f * Math.PI * 1.15,
+        // Tiny spread in loop rate so they drift gently in and out of sync.
+        fMul: 1 + (f - 0.5) * 0.1,
+        lane: count === 1 ? 0 : f * 2 - 1,
       });
     }
     return out;
   }
 
-  function offsets(s: Strand, t: number, along: number, crossAmp: number) {
-    const loop = TAU * s.fL * t + s.ph;
-    const alongWander =
-      along * s.ax * Math.sin(loop) +
-      along * s.ax2 * Math.sin(TAU * s.f2 * t + s.ph2);
-    const crossWander =
-      crossAmp * s.ay * Math.cos(loop) +
-      crossAmp * s.ay2 * Math.sin(TAU * s.f3 * t + s.ph3);
+  function offsets(
+    s: Strand,
+    t: number,
+    along: number,
+    crossAmp: number,
+    loops: number,
+  ) {
+    const a = TAU * loops * s.fMul * t + s.phase;
+    const wobble = WOBBLE * Math.sin(2 * a + s.phase);
+    const alongWander = along * (Math.sin(a) + wobble);
+    const crossWander = crossAmp * (Math.cos(a) - wobble);
     return [alongWander, crossWander];
   }
 
@@ -249,7 +240,8 @@ const isRail = fixed && orientation === "vertical";
   }
 
   function buildStrand(inst: Inst, s: Strand, p: number) {
-    const { N, w, h, amplitude, reach, resolveGap, vertical, anchor } = inst;
+    const { N, w, h, amplitude, reach, loops, resolveGap, vertical, anchor } =
+      inst;
     const alongLen = vertical ? h : w;
     const crossSize = vertical ? w : h;
     const pad = Math.min(30, alongLen * 0.04);
@@ -257,9 +249,13 @@ const isRail = fixed && orientation === "vertical";
       ? Math.min(crossSize * 0.5, 54)
       : crossSize / 2;
     const reachPx = Math.max(46, Math.min(280, alongLen * reach));
+    // Headroom at the start so the first upward loop doesn't clip off the edge.
+    const padStart = Math.min(alongLen * 0.42, Math.max(pad, reachPx * 0.85 + 20));
     const front = p * (1 + FEATHER);
     const lo = 5;
     const hi = crossSize - 5;
+    const aLo = 6;
+    const aHi = alongLen - 6;
     // On a wide rail, let the loops live out in the open space rather than
     // jammed against the near edge: drift the loop centre away from the
     // resolved line once past the anchor, then ease back before the tail.
@@ -267,18 +263,20 @@ const isRail = fixed && orientation === "vertical";
     const pts: number[][] = [];
     for (let i = 0; i < N; i++) {
       const u = i / (N - 1);
-      const baseAlong = pad + u * (alongLen - 2 * pad);
+      const baseAlong = padStart + u * (alongLen - padStart - pad);
       const resolvedCross = crossCenter + s.lane * resolveGap;
       const straighten = smooth((front - u) / FEATHER);
       const tangle = 1 - straighten;
       const taper = smooth(Math.min(u, 1 - u) / 0.12);
       const loopShift =
         drift * smooth((u - 0.08) / 0.22) * smooth((0.94 - u) / 0.16);
-      const [aw, cw] = offsets(s, u, reachPx, amplitude);
-      const alongPos = baseAlong + aw * tangle * taper;
+      const [aw, cw] = offsets(s, u, reachPx, amplitude, loops);
+      let alongPos = baseAlong + aw * tangle * taper;
       let crossPos = resolvedCross + (loopShift + cw) * tangle * taper;
       if (crossPos < lo) crossPos = lo;
       if (crossPos > hi) crossPos = hi;
+      if (alongPos < aLo) alongPos = aLo;
+      if (alongPos > aHi) alongPos = aHi;
       let x = vertical ? crossPos : alongPos;
       let y = vertical ? alongPos : crossPos;
       if (anchor) {
@@ -350,6 +348,7 @@ const isRail = fixed && orientation === "vertical";
       cross: Number(el.dataset.height) || 130,
       amplitude: Number(el.dataset.amplitude) || 26,
       reach: Number(el.dataset.reach) || 0.11,
+      loops: Number(el.dataset.loops) || 3,
       resolveGap: Number(el.dataset.resolveGap ?? 0),
       w: 1,
       h: 130,

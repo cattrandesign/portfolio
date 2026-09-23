@@ -1,0 +1,120 @@
+---
+const links = [
+  { href: "/#case-studies", label: "Case studies" },
+  { href: "/#testimonials", label: "Testimonials" },
+  { href: "/#about", label: "About" },
+  { href: "/#contact", label: "Contact" },
+];
+---
+
+<a class="skip" href="#main">Skip to content</a>
+
+<nav aria-label="Primary">
+  <a class="logo" href="/" aria-label="Cat Tran, home">
+    <span aria-hidden="true">ct</span>
+  </a>
+
+  <ul class="nav-group">
+    {
+      links.map((l) => (
+        <li>
+          <a href={l.href}>{l.label}</a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .skip {
+    position: absolute;
+    left: 16px;
+    top: -48px;
+    z-index: 20;
+    background: #2a2724;
+    color: #f8f4ed;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    transition: top 0.15s ease;
+  }
+  .skip:focus {
+    top: 12px;
+  }
+
+  nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 10;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 20px clamp(28px, 5vw, 88px) 20px calc(var(--edge) + 36px);
+    pointer-events: none;
+    font-family: var(--font-sans);
+  }
+  .nav-group {
+    pointer-events: auto;
+    display: flex;
+    gap: 26px;
+    margin: 0;
+    padding: 11px 20px;
+    list-style: none;
+    background: rgba(248, 244, 237, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 999px;
+  }
+  nav a {
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav-group a {
+    color: #2a2724;
+    font-size: 15px;
+  }
+  .nav-group a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .logo {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex: none;
+    background: #72a085;
+    border-radius: 50%;
+    font-family: var(--font-serif);
+    font-size: 17px;
+    letter-spacing: 0.03em;
+    color: #2a2724;
+  }
+  nav a:focus-visible,
+  .skip:focus-visible {
+    outline: 2px solid #2a2724;
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+  .logo:focus-visible {
+    border-radius: 50%;
+  }
+
+  @media (max-width: 640px) {
+    nav {
+      gap: 12px;
+      padding: 12px 16px 12px calc(var(--edge) + 22px);
+    }
+    .nav-group {
+      gap: 14px;
+      padding: 9px 14px;
+    }
+    .nav-group a {
+      font-size: 13px;
+    }
+  }
+</style>

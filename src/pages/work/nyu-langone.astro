@@ -1,0 +1,219 @@
+---
+import CaseStudy from "../../layouts/CaseStudy.astro";
+
+const facts = [
+  { k: "Role", v: "UX research, interaction design" },
+  { k: "Team", v: "PM, UI designer, product manager, nurse informaticist, engineer" },
+  { k: "Year", v: "2023 · Contract" },
+];
+
+const painPoints = [
+  {
+    p: "Managers checked every nurse by hand against their department's requirements: 13 shifts, 4 weekends, 3 requested days off, and so on.",
+    r: "Make the requirements a precondition, surfaced in the nurse's own view before a request reaches the manager.",
+  },
+  {
+    p: "Coverage rules lived in a separate sheet managers had to reference or memorize. Each department needs different daily totals by competency.",
+    r: "Live counters at the top of the screen, understaffed days flagged, seniority and competency stored in the app.",
+  },
+  {
+    p: "Managers worried about fairness: not moving the same people over and over, not scheduling anyone more than three shifts in a row.",
+    r: "Mark every moved shift with a symbol and keep a history of who has been moved.",
+  },
+];
+
+const changes = [
+  "Added a charge-nurses-per-day row to the top counters (every unit needs one or two working), with required numbers shown for units that fluctuate, like the ED.",
+  "Merged Charge RNs and regular RNs into one list, sortable by name or seniority. Managers looked people up alphabetically, not by role.",
+  "Handled preceptor / orientee pairs by marking orientees with their preceptor's initials rather than color. Too many colors were already in use. This was the hardest call and I'm still not sure we nailed it.",
+  "Gave each shift type its own symbol, so color is never the only signal. An accessibility fix that didn't come up in testing but should have.",
+];
+---
+
+<CaseStudy
+  title="Nurse scheduling software · Cat Tran"
+  description="Research and interaction design for NYU Langone Health's nurse scheduling software, replacing a manual Google Sheets process across seven departments."
+  client="NYU Langone Health"
+  heading="Nurse scheduling software"
+  lede="Nurse managers across NYU Langone were balancing hundreds of shift requests by hand in Google Sheets. I ran the research across seven departments and designed the MVP that replaced the spreadsheet."
+  facts={facts}
+>
+  <section>
+    <h2 class="eyebrow">The problem</h2>
+    <p>
+      Nurse scheduling is a logic puzzle. Every nurse has requirements (shift
+      counts, weekend minimums, requested days off), and every department needs
+      specific coverage by role, competency, and seniority. Managers held all of
+      it across their memory and a tangle of spreadsheets, and every delay or
+      error landed on patient care and nurse morale. Management wanted
+      purpose-built software to replace the manual process.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Research</h2>
+    <p>
+      I interviewed five nurse managers and four nurses across the Neonatal ICU,
+      Emergency, Pulmonology and other units. The domain was new to the whole
+      team, so I kept questions open. I was learning overtime rules, float pools,
+      swap systems and nurse-to-bed ratios from scratch. Our nurse informaticist
+      sat in on every session to translate jargon in real time and ask the
+      questions a non-nurse wouldn't think to.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Synthesis</h2>
+    <p>
+      The spreadsheets were dense with acronyms and symbols. I built three
+      deliverables to make them legible:
+    </p>
+    <ul>
+      <li>
+        an <strong>affinity map</strong> grouping interview themes for nurses and
+        managers
+      </li>
+      <li>
+        a <strong>service map</strong> placing those themes into each phase of
+        the scheduling process, so both perspectives showed up side by side
+      </li>
+      <li>
+        <strong>user journeys</strong> (actions, touchpoints, feelings, pain
+        points, recommendations), which became the artifact I shared with
+        stakeholders and engineering
+      </li>
+    </ul>
+
+    <figure class="shot">
+      <img
+        src="/work/nyu-langone/affinity-phases.png"
+        alt="Affinity map of interview themes arranged into columns for each phase of the scheduling process, with a row for nurse managers and a row for nurses."
+        width="1210"
+        height="408"
+        loading="lazy"
+      />
+      <figcaption>
+        The affinity map, sorted into the phases of the scheduling process so
+        both perspectives sat side by side.
+      </figcaption>
+    </figure>
+
+    <figure class="shot">
+      <img
+        src="/work/nyu-langone/nm-journey.png"
+        alt="Nurse manager journey map with rows for actions, actors, touchpoints, feelings, pain points and recommendations across five phases, and an emotion curve dipping through the balancing phase."
+        width="947"
+        height="530"
+        loading="lazy"
+      />
+      <figcaption>
+        The nurse manager journey, the artifact I shared with stakeholders and
+        engineering. The emotion curve bottoms out at balancing, which is where
+        the design focused.
+      </figcaption>
+    </figure>
+
+    <p>Three pain points shaped the design.</p>
+    <ol class="pain">
+      {
+        painPoints.map((x, i) => (
+          <li>
+            <span class="pain-n">{i + 1}</span>
+            <div>
+              <p class="pain-p">{x.p}</p>
+              <p class="pain-r">
+                <span>Response</span>
+                {x.r}
+              </p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Design</h2>
+    <p>
+      The UI designer built the wireframe; from usability testing on, I owned the
+      iteration. Testing was mostly positive, a good sign we'd heard people
+      right. What I changed:
+    </p>
+    <ul>
+      {changes.map((c) => <li>{c}</li>)}
+    </ul>
+    <p>
+      We designed for managers first, since they struggled most with Sheets,
+      then stripped it down for the nurse view.
+    </p>
+
+    <figure class="shot">
+      <img
+        src="/work/nyu-langone/grid-before.png"
+        alt="An early iteration of the scheduling grid, with Charge RNs and RNs in two separate collapsible lists and a single totals row."
+        width="1920"
+        height="1653"
+        loading="lazy"
+      />
+      <figcaption>Early iteration: separate lists, one totals row.</figcaption>
+    </figure>
+
+    <figure class="shot">
+      <img
+        src="/work/nyu-langone/grid-after.webp"
+        alt="The final scheduling grid: one alphabetically sortable list of nurses, two counter rows at the top for shifts and charge nurses per day, understaffed days flagged in red, and orientees separated below and marked with their preceptor's initials."
+        width="1959"
+        height="1444"
+        loading="lazy"
+      />
+      <figcaption>
+        Final handoff: one sortable list, live counters for shifts and charge
+        nurses, understaffed days flagged, orientees separated and marked with
+        their preceptor's initials.
+      </figcaption>
+    </figure>
+
+    <p class="note">
+      Color was doing too much work here: a separate hue for every shift type, no
+      system behind it. The counters had accessibility gaps too, low contrast and
+      understaffed days flagged by red alone. I'd reach for established enterprise
+      counter and badge patterns now instead of inventing my own. It's the kind
+      of gap that pushed me toward design systems. The structure holds, though:
+      everything a manager needs to balance a schedule is on one screen.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Outcome</h2>
+    <p>
+      The pilot launched to 12 nursing departments of varying sizes. Rolled out
+      across the network, the software is projected to give
+      <strong>375+ managers back 3,000+ hours a month</strong> and bring more
+      equitable, timely schedules to <strong>9,000+ nurses</strong> in a role
+      with conventionally high turnover.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">What was hard</h2>
+    <ul class="hard">
+      <li>
+        <strong>Domain overload.</strong> I accepted early that I couldn't learn
+        everything and narrowed to the most broken areas. Pulling the
+        informaticist into interviews was the unlock, and she wanted to learn
+        UXR, so it went both ways.
+      </li>
+      <li>
+        <strong>Whose input counts.</strong> Leadership opinions arrived
+        mid-project and my instinct was to accommodate them. I pushed to table
+        them for later studies rather than let them outweigh what we heard from
+        participants.
+      </li>
+      <li>
+        <strong>Silos.</strong> I was separated from the UI designer and
+        engineer, so handoff turned into unplanned prioritization. Next time I'd
+        insist they're in the room from the start.
+      </li>
+    </ul>
+  </section>
+</CaseStudy>

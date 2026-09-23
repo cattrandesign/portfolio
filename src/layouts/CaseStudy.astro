@@ -1,0 +1,377 @@
+---
+import Layout from "./Layout.astro";
+import Nav from "../components/Nav.astro";
+import SquiggleLine from "../components/SquiggleLine.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  client: string;
+  heading: string;
+  lede: string;
+  facts: { k: string; v: string }[];
+}
+
+const { title, description, client, heading, lede, facts } = Astro.props;
+---
+
+<Layout title={title} description={description}>
+  <Nav />
+
+  <SquiggleLine
+    orientation="vertical"
+    fixed
+    side="left"
+    rail={230}
+    inset="var(--edge)"
+    amplitude={38}
+    reach={0.12}
+    loops={4.4}
+    strands={1}
+    colors={["#2A2724"]}
+    anchor=".logo"
+  />
+
+  <main id="main" class="cs">
+    <a class="back" href="/#case-studies">&larr; Case studies</a>
+
+    <header class="cs-header">
+      <p class="cs-client">{client}</p>
+      <h1>{heading}</h1>
+      <p class="cs-lede" set:html={lede} />
+    </header>
+
+    <dl class="facts">
+      {
+        facts.map((f) => (
+          <div>
+            <dt>{f.k}</dt>
+            <dd>{f.v}</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <slot />
+
+    <a class="back back-end" href="/#case-studies">&larr; All case studies</a>
+  </main>
+</Layout>
+
+<style is:global>
+  .cs {
+    box-sizing: border-box;
+    position: relative;
+    z-index: 2;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 128px clamp(24px, 5vw, 40px) 120px
+      calc(var(--edge) + clamp(200px, 15vw, 236px));
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  .cs *,
+  .cs *::before,
+  .cs *::after {
+    box-sizing: border-box;
+  }
+  .cs .back {
+    display: inline-block;
+    font-size: 14px;
+    color: var(--warm-grey);
+    text-decoration: none;
+  }
+  .cs .back:hover {
+    color: var(--terracotta-ink);
+  }
+  .cs .back:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .cs .cs-header {
+    margin: 28px 0 0;
+  }
+  .cs .cs-client {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--terracotta-ink);
+    margin: 0 0 10px;
+  }
+  .cs h1 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(32px, 5vw, 46px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--terracotta);
+  }
+  .cs .cs-lede {
+    font-family: var(--font-serif);
+    font-size: clamp(19px, 2.2vw, 23px);
+    line-height: 1.45;
+    color: var(--ink);
+    margin: 18px 0 0;
+  }
+
+  .cs .facts {
+    display: grid;
+    gap: 14px;
+    margin: 36px 0 8px;
+    padding: 22px 0;
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .cs .facts div {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 16px;
+  }
+  .cs .facts dt {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--terracotta-ink);
+    padding-top: 2px;
+  }
+  .cs .facts dd {
+    margin: 0;
+    font-size: 14.5px;
+    color: var(--ink);
+  }
+
+  .cs section {
+    margin: 48px 0 0;
+  }
+  .cs .eyebrow {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--terracotta-ink);
+    margin: 0 0 14px;
+  }
+  .cs section p {
+    margin: 0 0 16px;
+    color: #38332e;
+  }
+  .cs section p:last-child {
+    margin-bottom: 0;
+  }
+  .cs strong {
+    font-weight: 600;
+  }
+  .cs section ul,
+  .cs section ol {
+    margin: 0 0 16px;
+    padding-left: 22px;
+    color: #38332e;
+  }
+  .cs section li {
+    margin: 0 0 10px;
+  }
+  .cs section a {
+    color: var(--terracotta-ink);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+
+  .cs .shot {
+    margin: 28px 0;
+  }
+  .cs .shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid var(--hairline);
+    background: #fff;
+  }
+  .cs .shot .ph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    aspect-ratio: 16 / 10;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px dashed var(--border-strong, #cfc3ac);
+    background: var(--tint, #e7dacd);
+    font-family: var(--font-serif);
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .cs .shot .diagram {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid var(--hairline);
+    background: #fff;
+    padding: 14px;
+  }
+  .cs .shot .diagram text {
+    font-family: var(--font-sans);
+  }
+  .cs .shot figcaption {
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--warm-grey);
+  }
+
+  .cs .note {
+    font-size: 14.5px;
+    color: var(--warm-grey);
+    border-left: 2px solid var(--hairline);
+    padding-left: 16px;
+    margin: 20px 0 0;
+  }
+
+  .cs .tbd {
+    background: #faeeda;
+    color: #633806;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: var(--font-sans);
+    font-size: 0.9em;
+    font-weight: 500;
+  }
+  .cs .stats {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+  }
+  .cs .stats li {
+    margin: 0;
+    padding: 16px;
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    background: #fdfbf6;
+  }
+  .cs .stat-v {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: 22px;
+    color: var(--terracotta);
+    margin-bottom: 5px;
+  }
+  .cs .stat-k {
+    display: block;
+    font-size: 13px;
+    color: var(--warm-grey);
+    line-height: 1.4;
+  }
+
+  .cs .compare-what {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 1.3;
+    color: var(--ink);
+    margin: 32px 0 12px;
+  }
+  .cs .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px 28px;
+    margin: 8px 0 20px;
+  }
+  .cs .compare > div {
+    margin: 0;
+  }
+  .cs .compare-label {
+    font-size: 11px !important;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    margin: 0 0 8px !important;
+  }
+  .cs .compare .before .compare-label {
+    color: var(--warm-grey);
+  }
+  .cs .compare .after .compare-label {
+    color: var(--terracotta-ink);
+  }
+  .cs .compare ul {
+    margin: 0 !important;
+    padding-left: 18px;
+    font-size: 14.5px;
+  }
+  .cs .compare li {
+    margin: 0 0 6px;
+  }
+
+  .cs .pain {
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 0;
+  }
+  .cs .pain > li {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 14px;
+    padding: 18px 0;
+    border-top: 1px solid var(--hairline);
+  }
+  .cs .pain > li:last-child {
+    border-bottom: 1px solid var(--hairline);
+  }
+  .cs .pain-n {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    color: var(--terracotta);
+    line-height: 1.3;
+  }
+  .cs .pain-p {
+    margin: 0 0 8px !important;
+  }
+  .cs .pain-r {
+    margin: 0 !important;
+    font-size: 15px;
+    color: var(--warm-grey);
+  }
+  .cs .pain-r span {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--terracotta-ink);
+    margin-bottom: 3px;
+  }
+  .cs .hard {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .cs .hard li {
+    margin: 0 0 16px;
+  }
+
+  .cs .back-end {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--hairline);
+    width: 100%;
+  }
+
+  @media (max-width: 640px) {
+    .cs {
+      padding: 104px 20px 90px calc(var(--edge) + 84px);
+    }
+    .cs .facts div {
+      grid-template-columns: 1fr;
+      gap: 3px;
+    }
+    .cs .compare {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+  }
+</style>

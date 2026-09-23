@@ -1,0 +1,361 @@
+---
+// A computed org-chart diagram (not a screenshot) comparing KettleOS's
+// original and proposed information architecture. Grows top-to-bottom as
+// depth increases left-to-right, like an indented outline, so the whole
+// tree reads on a normal vertical scroll instead of a wide horizontal fan.
+// Box color encodes the kind of node — that's what makes the "Edit buttons
+// scattered everywhere" problem visible in the Original tree and the fix
+// visible in Proposed.
+interface SiteNode {
+  label: string;
+  kind: "root" | "category" | "item" | "action";
+  children?: SiteNode[];
+}
+
+interface Positioned {
+  label: string;
+  kind: SiteNode["kind"];
+  x: number;
+  y: number;
+  children: Positioned[];
+}
+
+const BOX_W = 126;
+const BOX_H = 38;
+const V_GAP = 14;
+const COL_W = 158;
+const GROUP_GAP = 26;
+
+function layoutNode(
+  node: SiteNode,
+  depth: number,
+  cursor: { y: number },
+): Positioned {
+  const kids = node.children ?? [];
+  const laid = kids.map((k) => layoutNode(k, depth + 1, cursor));
+  let y: number;
+  if (laid.length) {
+    y = (laid[0].y + laid[laid.length - 1].y) / 2;
+  } else {
+    y = cursor.y;
+    cursor.y += BOX_H + V_GAP;
+  }
+  return { label: node.label, kind: node.kind, x: depth * COL_W, y, children: laid };
+}
+
+function buildTree(root: SiteNode): Positioned {
+  const cursor = { y: 0 };
+  const topKids = root.children ?? [];
+  const laid: Positioned[] = [];
+  topKids.forEach((k, i) => {
+    laid.push(layoutNode(k, 1, cursor));
+    if (i < topKids.length - 1) cursor.y += GROUP_GAP;
+  });
+  const y = laid.length ? (laid[0].y + laid[laid.length - 1].y) / 2 : 0;
+  return { label: root.label, kind: root.kind, x: 0, y, children: laid };
+}
+
+function flatten(node: Positioned, out: Positioned[] = []): Positioned[] {
+  out.push(node);
+  node.children.forEach((c) => flatten(c, out));
+  return out;
+}
+
+function connectorPaths(node: Positioned, out: string[] = []): string[] {
+  if (node.children.length) {
+    const pcy = node.y + BOX_H / 2;
+    const prx = node.x + BOX_W;
+    const midX = prx + (COL_W - BOX_W) / 2;
+    let d = `M ${prx} ${pcy} H ${midX}`;
+    if (node.children.length > 1) {
+      const firstCy = node.children[0].y + BOX_H / 2;
+      const lastCy = node.children[node.children.length - 1].y + BOX_H / 2;
+      d += ` M ${midX} ${firstCy} V ${lastCy}`;
+    }
+    node.children.forEach((c) => {
+      const ccy = c.y + BOX_H / 2;
+      d += ` M ${midX} ${ccy} H ${c.x}`;
+    });
+    out.push(d);
+    node.children.forEach((c) => connectorPaths(c, out));
+  }
+  return out;
+}
+
+// Deterministic per-label jitter so boxes feel hand-placed, not CAD-drawn.
+function jitter(seed: string, range: number) {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  return ((h % 1000) / 1000 - 0.5) * 2 * range;
+}
+
+const STYLES: Record<
+  SiteNode["kind"],
+  { fill: string; stroke: string; text: string; weight: number; strokeWidth: number }
+> = {
+  root: { fill: "#2A2724", stroke: "#2A2724", text: "#F8F4ED", weight: 600, strokeWidth: 0 },
+  category: { fill: "#72A085", stroke: "#72A085", text: "#2A2724", weight: 600, strokeWidth: 0 },
+  item: { fill: "#FDFBF6", stroke: "#E6DDCC", text: "#2A2724", weight: 400, strokeWidth: 1.3 },
+  action: { fill: "#FDFBF6", stroke: "#A8451E", text: "#A8451E", weight: 500, strokeWidth: 1.4 },
+};
+
+const originalTree: SiteNode = {
+  label: "KettleOS",
+  kind: "root",
+  children: [
+    {
+      label: "Locations",
+      kind: "category",
+      children: [
+        { label: "Location 1", kind: "item" },
+        { label: "Location 2", kind: "item" },
+        { label: "Add a Location", kind: "action" },
+        { label: "Edit a Location", kind: "action" },
+      ],
+    },
+    {
+      label: "Users",
+      kind: "category",
+      children: [
+        {
+          label: "Work Groups",
+          kind: "item",
+          children: [
+            { label: "Work Group 1", kind: "item" },
+            { label: "Work Group 2", kind: "item" },
+          ],
+        },
+        { label: "Edit Work Group", kind: "action" },
+        { label: "Add Work Group", kind: "action" },
+        { label: "All Users", kind: "item" },
+        { label: "Edit User", kind: "action" },
+        { label: "Add a User", kind: "action" },
+      ],
+    },
+  ],
+};
+
+const proposedTree: SiteNode = {
+  label: "KettleOS",
+  kind: "root",
+  children: [
+    {
+      label: "Locations",
+      kind: "category",
+      children: [
+        { label: "Location 1", kind: "item", children: [{ label: "Edit Location 1", kind: "action" }] },
+        { label: "Location 2", kind: "item", children: [{ label: "Edit Location 2", kind: "action" }] },
+        { label: "Add a Location", kind: "action" },
+      ],
+    },
+    {
+      label: "Users",
+      kind: "category",
+      children: [
+        { label: "User 1", kind: "item", children: [{ label: "Edit User 1", kind: "action" }] },
+        { label: "User 2", kind: "item", children: [{ label: "Edit User 2", kind: "action" }] },
+        { label: "Add a User", kind: "action" },
+      ],
+    },
+    {
+      label: "Work Groups",
+      kind: "category",
+      children: [
+        { label: "Work Group 1", kind: "item", children: [{ label: "Edit Work Group 1", kind: "action" }] },
+        { label: "Work Group 2", kind: "item", children: [{ label: "Edit Work Group 2", kind: "action" }] },
+        { label: "Add a Work Group", kind: "action" },
+      ],
+    },
+  ],
+};
+
+const original = buildTree(originalTree);
+const proposed = buildTree(proposedTree);
+const originalFlat = flatten(original);
+const proposedFlat = flatten(proposed);
+const originalConnectors = connectorPaths(original);
+const proposedConnectors = connectorPaths(proposed);
+
+function bounds(flat: Positioned[]) {
+  const width = Math.max(...flat.map((n) => n.x + BOX_W));
+  const height = Math.max(...flat.map((n) => n.y)) + BOX_H;
+  return { width, height };
+}
+
+const originalBounds = bounds(originalFlat);
+const proposedBounds = bounds(proposedFlat);
+
+const MARGIN = 22;
+const LABEL_H = 34;
+const SECTION_GAP = 40;
+const maxWidth = Math.max(originalBounds.width, proposedBounds.width);
+const totalWidth = maxWidth + MARGIN * 2;
+
+const originalTx = MARGIN;
+const originalTy = MARGIN + LABEL_H;
+const proposedTx = MARGIN;
+const proposedTy = originalTy + originalBounds.height + SECTION_GAP + LABEL_H;
+const totalHeight = proposedTy + proposedBounds.height + MARGIN;
+
+const sections = [
+  { label: "Original", tx: originalTx, ty: originalTy, width: originalBounds.width, flat: originalFlat, connectors: originalConnectors },
+  { label: "Proposed", tx: proposedTx, ty: proposedTy, width: proposedBounds.width, flat: proposedFlat, connectors: proposedConnectors },
+];
+---
+
+<div class="sitemap-card">
+  <div class="diagram-scroll" data-scroll>
+    <svg
+      class="sitemap-diagram"
+      viewBox={`0 0 ${totalWidth} ${totalHeight}`}
+      width={totalWidth}
+      height={totalHeight}
+      role="img"
+      aria-label="Sitemap comparison. Original: KettleOS splits into Locations and Users, with Edit and Add buttons scattered at every level, including a nested Work Groups list under Users. Proposed: KettleOS splits into Locations, Users, and Work Groups as equal top-level sections; each has one Add action at the top and an Edit action beneath every individual item."
+    >
+      {
+        sections.map((s) => (
+          <g transform={`translate(${s.tx},${s.ty})`}>
+            <text x={0} y={-14} class="tree-label">
+              {s.label}
+            </text>
+            {s.connectors.map((d) => (
+              <path d={d} class="connector" />
+            ))}
+            {s.flat.map((n) => {
+              const style = STYLES[n.kind];
+              const angle = jitter(n.label + n.kind, 1.1);
+              const rx = 9 + jitter(n.label + "r", 2.2);
+              const cx = n.x + BOX_W / 2;
+              const cy = n.y + BOX_H / 2;
+              return (
+                <g transform={`rotate(${angle.toFixed(2)} ${cx} ${cy})`}>
+                  <rect
+                    x={n.x}
+                    y={n.y}
+                    width={BOX_W}
+                    height={BOX_H}
+                    rx={rx}
+                    fill={style.fill}
+                    stroke={style.stroke}
+                    stroke-width={style.strokeWidth}
+                  />
+                  <text
+                    x={cx}
+                    y={cy + (n.kind === "root" ? 4.5 : 3.6)}
+                    text-anchor="middle"
+                    fill={style.text}
+                    font-size={n.kind === "root" ? 12 : 10}
+                    font-weight={style.weight}
+                  >
+                    {n.label}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
+        ))
+      }
+    </svg>
+  </div>
+
+  <ul class="sitemap-legend">
+    <li><span class="dot" style="--dot:#72A085"></span>Section (top-level)</li>
+    <li><span class="dot" style="--dot:#FDFBF6;--ring:#E6DDCC"></span>Item</li>
+    <li><span class="dot" style="--dot:#FDFBF6;--ring:#A8451E"></span>Add / Edit action</li>
+  </ul>
+</div>
+
+<style>
+  .sitemap-card {
+    border-radius: 12px;
+    border: 1px solid var(--hairline, #e6ddcc);
+    background: #fff;
+    padding: 14px;
+  }
+  .diagram-scroll {
+    position: relative;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .diagram-scroll::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 28px;
+    background: linear-gradient(to right, transparent, #fff);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .diagram-scroll.can-scroll:not(.at-end)::after {
+    opacity: 1;
+  }
+  .sitemap-diagram {
+    display: block;
+  }
+  .sitemap-diagram text {
+    font-family: var(--font-sans);
+  }
+  .tree-label {
+    font-family: var(--font-serif);
+    font-size: 19px;
+    fill: var(--ink);
+  }
+  .connector {
+    fill: none;
+    stroke: #b9ac92;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .sitemap-legend {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin: 14px 0 0;
+    padding: 0;
+    font-size: 13px;
+    color: var(--warm-grey);
+  }
+  .sitemap-legend li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+  .sitemap-legend .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    background: var(--dot);
+    border: 1.4px solid var(--ring, var(--dot));
+    flex-shrink: 0;
+  }
+</style>
+
+<script>
+  function wireScrollFade(el: HTMLElement) {
+    const update = () => {
+      const canScroll = el.scrollWidth > el.clientWidth + 1;
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
+      el.classList.toggle("can-scroll", canScroll);
+      el.classList.toggle("at-end", atEnd);
+    };
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(update).observe(el);
+    } else {
+      window.addEventListener("resize", update);
+    }
+  }
+
+  document
+    .querySelectorAll<HTMLElement>("[data-scroll]")
+    .forEach((el) => wireScrollFade(el));
+</script>

@@ -1,0 +1,354 @@
+---
+import CaseStudy from "../../layouts/CaseStudy.astro";
+import KettleSitemapDiagram from "../../components/KettleSitemapDiagram.astro";
+
+const facts = [
+  { k: "Role", v: "Sole UX designer" },
+  { k: "Team", v: "CTO, Head of Product, 3 engineers" },
+  { k: "Year", v: "2021 · Contract" },
+];
+
+const sources = [
+  {
+    label: "Interaction Design for Trees",
+    by: "Hagan Rivers",
+    href: "https://medium.com/@hagan.rivers/interaction-design-for-trees-5e915b408ed2",
+  },
+  {
+    label: "Designing an Admin Panel",
+    by: "Christian Behler",
+    href: "https://uxdesign.cc/designing-an-admin-panel-3e77c19870f4",
+  },
+  {
+    label: "Apple Human Interface Guidelines",
+    by: "Apple",
+    href: "https://developer.apple.com/design/human-interface-guidelines/",
+  },
+  {
+    label: "Material Design",
+    by: "Google",
+    href: "https://m2.material.io/design/guidelines-overview",
+  },
+];
+
+const compares = [
+  {
+    what: "Editing a user",
+    before: [
+      "Every field forced into one small modal",
+      "Schedule and permitted locations collapsed together, hard to read",
+    ],
+    after: [
+      "Full screen to work in",
+      "Schedule and permitted locations separated and visible at a glance",
+    ],
+    shots: [
+      {
+        src: "/work/kettleos/edit-modal-before.gif",
+        alt: "Before: editing a work group in a small modal stacked over the dimmed page, with Group Meta, Members, Locations & Schedule, and Health & Access crammed into one narrow panel.",
+        width: 1434,
+        height: 877,
+        label: "Before",
+      },
+      {
+        src: "/work/kettleos/edit-fullscreen-after.gif",
+        alt: "After: editing a work group on a full screen with tabbed Details, Schedule, Permitted Locations, and Members sections.",
+        width: 1439,
+        height: 899,
+        label: "After",
+      },
+    ],
+  },
+  {
+    what: "Viewing a location",
+    before: [
+      "One page, a different display pattern for each kind of data",
+      "Several “Manage” buttons",
+      "Color combinations that failed WCAG (white on green, white on red)",
+    ],
+    after: [
+      "Tabbed sections, all using the same pattern",
+      "One global Edit button",
+      "Every color combination AA or better",
+    ],
+    shots: [
+      {
+        src: "/work/kettleos/viewing-location-before-after.webp",
+        alt: "Before and after of a location page. Before: a single crowded page mixing a photo carousel, a floor list, and a reservations table. After: a Finder-style sidebar of locations next to one location's Details, Schedule, and floor table.",
+        width: 1747,
+        height: 806,
+      },
+    ],
+  },
+  {
+    what: "Deactivating and floors",
+    before: [
+      "A prominent Deactivate button sitting in the modal",
+      "Floor information nested in its own set of modals",
+    ],
+    after: [
+      "Deactivate moved behind the Edit screen, so it's a deliberate choice",
+      "Floor information shown as a table",
+    ],
+    shots: [
+      {
+        src: "/work/kettleos/editing-location-before-after.webp",
+        alt: "Before and after of editing a location. Before: a small Edit Location modal pulled out over the dimmed page. After: a full-screen Edit Location view with Details, Schedule, and Floors tabs.",
+        width: 1909,
+        height: 783,
+      },
+    ],
+  },
+];
+---
+
+<CaseStudy
+  title="KettleOS admin panel · Cat Tran"
+  description="Information architecture and a consistent pattern system for KettleOS, the desktop admin panel behind Kettle's hybrid-work platform."
+  client="Kettle"
+  heading="KettleOS admin panel"
+  lede="KettleOS had grown into a tangle of one-off patterns and ambiguous Edit buttons. I replaced it with a small, reusable pattern system, two layouts doing the work of a dozen, built on established admin conventions rather than invented from scratch."
+  facts={facts}
+>
+  <section>
+    <h2 class="eyebrow">Context</h2>
+    <p>
+      Kettle is a hybrid-work platform for managing office real estate and
+      scheduling. After a Scan &amp; Reserve pilot with NYU during the pandemic,
+      Kettle wanted to fold space reservations into its product and grow the B2B
+      relationship. Over eight weeks in 2021 I redesigned KettleOS, the desktop
+      admin panel Kettle's ops teams use to manage every location, space, and
+      access rule.
+    </p>
+    <p>
+      I was the sole UX designer, working with the CTO, the Head of Product, and
+      three engineers. We met at standup every day and shipped one small piece at
+      a time.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">The problem</h2>
+    <p>
+      Testers found the existing panel hard to learn. Varying colors, shapes, and
+      hierarchies made it difficult to tell what was what. Editing was the worst
+      of it: too many <strong>Edit</strong> buttons, each opening a separate
+      modal, with no clear sense of what a given edit would change. The prototype
+      also needed to move from Sketch and InVision into Figma. I had never
+      designed an admin panel before.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Learning from what exists</h2>
+    <p>
+      Rather than invent, I spent the first days reading about admin-panel design
+      and pulling apart existing products, so I could reuse proven conventions
+      and spend my own time on what was actually specific to Kettle.
+    </p>
+    <ul>
+      {
+        sources.map((s) => (
+          <li>
+            <a href={s.href}>{s.label}</a> &nbsp;·&nbsp; {s.by}
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Information architecture</h2>
+    <p>
+      I started by diagramming the data structure and the hierarchy of objects in
+      Miro, then mapped the existing sitemap and proposed a new one. The core
+      objects (Locations, Work Groups, Users) moved to the top level, and the
+      edit structure was standardized so that <strong>add</strong> lives at the
+      top level and <strong>edit</strong> lives at the individual level. After
+      that, the path to view or edit a Location, a Work Group, or a User all
+      looked the same.
+    </p>
+
+    <figure class="shot">
+      <KettleSitemapDiagram />
+      <figcaption>
+        The proposed architecture pulls the core objects up a level and makes
+        every edit path identical: one Add at the top of each section, one
+        Edit beneath every item.
+      </figcaption>
+    </figure>
+
+    <p>
+      For navigation I compared the usual tree patterns and chose a{" "}
+      <strong>Finder pattern</strong>: right for a small, finite number of layers
+      (unlike Miller Columns) holding non-tabular data (unlike a collapsible
+      table).
+    </p>
+
+    <figure class="shot">
+      <img
+        src="/work/kettleos/nav-pattern-comparison.webp"
+        alt="Three navigation patterns compared: Finder, with a hierarchical sidebar and file list; a collapsible table with nested rows; and Miller Columns, with cascading panes. Finder is circled as the chosen pattern."
+        width="2000"
+        height="750"
+        loading="lazy"
+      />
+      <figcaption>
+        Finder vs. Miller Columns vs. collapsible table.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">A two-pattern system</h2>
+    <p>
+      The old panel used a different display pattern for almost every kind of
+      data. I catalogued all of them and found the content really only came in
+      two shapes: <strong>key / value pairs</strong> and <strong>tables</strong>.
+      One simple pattern for each, used everywhere, did most of the work of
+      making the panel feel consistent.
+    </p>
+
+    <ul class="stats">
+      <li>
+        <span class="stat-v">5+ → 2</span>
+        <span class="stat-k">
+          one-off display patterns collapsed into one for key/value data, one
+          for tables
+        </span>
+      </li>
+    </ul>
+
+    <p>On top of that:</p>
+    <ul>
+      <li>the scattered Edit buttons became a single global Edit</li>
+      <li>
+        editing moved out of cramped modals onto full screens with tabbed
+        sections
+      </li>
+      <li>
+        every color combination was brought to AA or better; the old panel had
+        white-on-green and white-on-red that failed
+      </li>
+      <li>
+        engineers pulled components from Grommet, a React framework, so I mapped
+        my Figma components to theirs
+      </li>
+    </ul>
+
+    <figure class="shot">
+      <img
+        src="/work/kettleos/two-pattern-system.webp"
+        alt="A Work Group detail screen showing the key/value pattern (Name, Team Leader, Description as labeled fields) on its Details tab, and the table pattern (a Permitted Locations table and a Members table) on its other tabs."
+        width="1909"
+        height="1195"
+        loading="lazy"
+      />
+      <figcaption>
+        The two patterns the whole panel is built from: key/value pairs for
+        object details, tables for lists.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Before and after</h2>
+    {
+      compares.map((c) => (
+        <>
+          <h3 class="compare-what">{c.what}</h3>
+          <div class="compare">
+            <div class="before">
+              <p class="compare-label">Before</p>
+              <ul>
+                {c.before.map((b) => (
+                  <li>{b}</li>
+                ))}
+              </ul>
+            </div>
+            <div class="after">
+              <p class="compare-label">After</p>
+              <ul>
+                {c.after.map((a) => (
+                  <li>{a}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <figure class="shot">
+            {c.shots.length > 1 ? (
+              <div class="shot-stack">
+                {c.shots.map((s) => (
+                  <div>
+                    {s.label && <p class="shot-stack-label">{s.label}</p>}
+                    <img
+                      src={s.src}
+                      alt={s.alt}
+                      width={s.width}
+                      height={s.height}
+                      loading="lazy"
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <img
+                src={c.shots[0].src}
+                alt={c.shots[0].alt}
+                width={c.shots[0].width}
+                height={c.shots[0].height}
+                loading="lazy"
+              />
+            )}
+          </figure>
+        </>
+      ))
+    }
+  </section>
+
+  <section>
+    <h2 class="eyebrow">Where it landed</h2>
+    <p>
+      KettleOS shipped into production on two patterns, one standardized edit
+      path for every object type, an accessible color set, and into Figma with
+      auto-layout so engineers could map directly to their Grommet components.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="eyebrow">What was hard</h2>
+    <ul class="hard">
+      <li>
+        <strong>Recruiting testers.</strong> Pandemic-era membership was
+        inactive, so I leaned on coworkers who worked with members every day,
+        choosing only people with no hand in building the app. I interviewed them
+        alongside the usability tests, and that extra context ended up shaping the
+        final design.
+      </li>
+      <li>
+        <strong>Handoff.</strong> Engineers kept asking what components in my
+        Figma file were called so they could find them in Grommet. I should have
+        annotated components with their library names from the start.
+      </li>
+      <li>
+        <strong>Auto-layout.</strong> I picked it up on this project and now
+        can't imagine designing without it.
+      </li>
+    </ul>
+  </section>
+</CaseStudy>
+
+<style>
+  .shot-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .shot-stack-label {
+    font-size: 11px !important;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--warm-grey);
+    margin: 0 0 8px !important;
+  }
+</style>
