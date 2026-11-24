@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import Nav from "../components/Nav.astro";
 import SquiggleLine from "../components/SquiggleLine.astro";
+import VennDivider from "../components/VennDivider.astro";
 
 const meta = [
   { label: "Based in", parts: ["Ellenville, New York"] },
@@ -14,18 +15,11 @@ const meta = [
 
 const caseStudies = [
   {
-    client: "NYU Langone Health",
-    slug: "/work/nyu-langone",
-    title: "Helping patients find the right care",
-    meta: "Contract · 2023",
-    tint: "#580F8B",
-    logo: { src: "/logos/nyu-langone.png", width: 560, height: 300 },
-  },
-  {
-    client: "Enterprise app",
+    client: "Enterprise healthcare app",
     slug: "/work/design-system",
+    locked: true,
     title: "Piloting an AI-native design system workflow",
-    meta: "Product design · 2026, abstracted",
+    meta: "2026",
     tint: "#E7E3D6",
     ratio: "4 / 3",
     logo: {
@@ -37,10 +31,20 @@ const caseStudies = [
     },
   },
   {
-    client: "Daisychain",
+    client: "NYU Langone Health",
+    slug: "/work/nyu-langone",
+    locked: true,
+    title:
+      "Designing multi-stakeholder scheduling software for nursing departments",
+    meta: "2023",
+    tint: "#580F8B",
+    logo: { src: "/logos/nyu-langone.png", width: 560, height: 300 },
+  },
+  {
+    client: "Daisychain via Trestle Collaborative",
     slug: "/work/daisychain",
-    title: "Designing a dashboard in eight weeks",
-    meta: "Contract · 2024",
+    title: "Designing a dashboard for election text campaigns",
+    meta: "2024",
     tint: "#F6F4F4",
     logo: {
       src: "/logos/daisychain-dashboard.jpg",
@@ -55,14 +59,15 @@ const caseStudies = [
     client: "KettleOS",
     slug: "/work/kettleos",
     title: "Rethinking the admin information architecture and design system",
-    meta: "Contract · 2021",
-    tint: "#E7DACD",
+    meta: "2021",
+    tint: "#FFFFFF",
+    logo: { src: "/logos/kettle.png", width: 410, height: 120, edge: true },
   },
   {
     client: "Instagram",
     slug: "/work/instagram",
     title: "Surfacing insights on hacked accounts",
-    meta: "Full-time · 2017",
+    meta: "2017",
     tint: "#E1306C",
     logo: { src: "/logos/instagram.jpg", width: 740, height: 740, cover: true },
   },
@@ -71,21 +76,45 @@ const caseStudies = [
     minor: true,
     title: "Simplifying the insurance marketplace",
     meta: "Self-initiated · 2022",
-    tint: "#DFE8DD",
+    tint: "#FFFFFF",
+    logo: {
+      src: "/logos/nysoh-after.jpg",
+      alt: "Redesigned New York State of Health homepage",
+      width: 837,
+      height: 279,
+      cover: true,
+      edge: true,
+    },
+    external: {
+      href: "https://uxplanet.org/ux-case-study-redesign-of-the-new-york-state-of-health-homepage-b92194b516b9",
+      label: "Published in UX Planet",
+    },
   },
   {
     client: "Zapier",
     minor: true,
     title: "Making automation feel approachable",
-    meta: "Full-time · 2020",
+    note: "Coming soon",
+    meta: "2020",
     tint: "#FFFDF9",
     logo: { src: "/logos/zapier.png", width: 1140, height: 360, edge: true },
   },
 ];
 
-const sections = [
-  { id: "about", k: "About" },
-  { id: "contact", k: "Contact" },
+const contacts = [
+  { k: "Email", label: "hello@cattran.design", href: "mailto:hello@cattran.design" },
+  {
+    k: "LinkedIn",
+    label: "linkedin.com/in/catntran",
+    href: "https://www.linkedin.com/in/catntran/",
+    external: true,
+  },
+  {
+    k: "Medium",
+    label: "medium.com/@catntran",
+    href: "https://medium.com/@catntran",
+    external: true,
+  },
 ];
 
 const testimonials = [
@@ -165,14 +194,15 @@ const testimonials = [
     reach={0.19}
     loops={2.6}
     strands={1}
-    colors={["#2A2724"]}
+    colors={["currentColor"]}
     anchor=".logo"
+    venn
   />
 
   <main id="main" class="wrap">
     <section id="hero" class="hero">
       <div class="headline">
-        <h1>Hi! I'm Cat.</h1>
+        <h1>Hi! I'm Cat Tran.</h1>
         <p class="tagline">
           I design kind, effortless experiences and robust systems for rapidly
           scaling organizations.
@@ -205,15 +235,21 @@ const testimonials = [
       </dl>
     </section>
 
+    <VennDivider variant={0} />
+
     <section id="case-studies" class="case-studies">
       <h2 class="eyebrow">Case studies</h2>
       <ol class="cs-grid">
         {
           caseStudies.map((c) => {
-            const Tag = c.slug ? "a" : "div";
+            const href = c.slug ?? c.external?.href;
+            const Tag = href ? "a" : "div";
+            const linkAttrs = c.external
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {};
             return (
               <li class:list={["cs-card", { "is-minor": c.minor }]}>
-                <Tag class="cs-link" href={c.slug}>
+                <Tag class="cs-link" href={href} {...linkAttrs}>
                   <div
                     class:list={["cs-thumb", { "has-edge": c.logo?.edge }]}
                     style={`--tint:${c.tint};${c.ratio ? `aspect-ratio:${c.ratio};` : ""}`}
@@ -222,17 +258,58 @@ const testimonials = [
                       <img
                         class:list={["cs-logo", { "is-cover": c.logo.cover }]}
                         src={c.logo.src}
-                        alt={c.logo.alt ?? c.client}
+                        alt={c.logo.alt ?? ""}
                         width={c.logo.width}
                         height={c.logo.height}
                         loading="lazy"
                       />
                     ) : (
-                      <span class="cs-name">{c.client}</span>
+                      <span class="cs-name" aria-hidden="true">
+                        {c.client}
+                      </span>
                     )}
                   </div>
                   <div class="cs-caption">
-                    <h3 class="cs-title">{c.title}</h3>
+                    <div class="cs-caption-main">
+                      <p class="cs-client">{c.client}</p>
+                      <h3 class="cs-title">
+                        {c.title}
+                        {c.locked && (
+                          <>
+                            <svg
+                              class="cs-ext cs-lock"
+                              viewBox="0 0 16 16"
+                              aria-hidden="true"
+                            >
+                              <rect x="3.5" y="7" width="9" height="6.5" rx="1.5" />
+                              <path d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7" />
+                            </svg>
+                            <span class="vh"> (password protected)</span>
+                          </>
+                        )}
+                        {c.note && (
+                          <>
+                            {" "}
+                            <span class="cs-note">({c.note})</span>
+                          </>
+                        )}
+                        {c.external && (
+                          <>
+                            <svg
+                              class="cs-ext"
+                              viewBox="0 0 16 16"
+                              aria-hidden="true"
+                            >
+                              <path d="M5.5 4.5h6v6M11.5 4.5l-7 7" />
+                            </svg>
+                            <span class="vh"> (opens in a new tab)</span>
+                          </>
+                        )}
+                      </h3>
+                      {c.external && (
+                        <span class="cs-pub">{c.external.label}</span>
+                      )}
+                    </div>
                     <span class="cs-meta">{c.meta}</span>
                   </div>
                 </Tag>
@@ -243,8 +320,10 @@ const testimonials = [
       </ol>
     </section>
 
-    <section id="testimonials" class="testimonials">
-      <h2 class="eyebrow">Testimonials</h2>
+    <VennDivider variant={1} />
+
+    <section id="nice-words" class="testimonials">
+      <h2 class="eyebrow">Nice words</h2>
       <div class="carousel">
         <button
           type="button"
@@ -302,13 +381,71 @@ const testimonials = [
       </div>
     </section>
 
-    {
-      sections.map((s) => (
-        <section id={s.id} class="panel">
-          <h2 class="eyebrow">{s.k}</h2>
-        </section>
-      ))
-    }
+    <VennDivider variant={2} />
+
+    <section id="about" class="about">
+      <h2 class="eyebrow">About</h2>
+      <div class="about-grid">
+        <img
+          class="about-photo"
+          src="/about/cat.jpg"
+          alt="Portrait of Cat at home, with houseplants in the background"
+          width="750"
+          height="1000"
+          loading="lazy"
+        />
+        <div class="about-copy">
+          <p class="about-lead">
+            The messier the problem the better.
+          </p>
+          <p>
+            Over the course of my 10-year career spanning CX and UX, I've
+            gravitated toward small organizations experiencing rapid growth
+            where I can develop new systems that make everyone's lives easier.
+            For the last 6 years, I've been working in high-stakes environments
+            like government and healthcare. Right now, I'm focused on
+            building AI-first design process that minimizes tedium and
+            maximizes judgment.
+          </p>
+          <p>
+            Outside of work, you'll usually find me out in nature with my dog,
+            Alvin, reading, or digging through vintage and antique shops for
+            something with a story.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <VennDivider variant={3} />
+
+    <section id="contact" class="contact">
+      <h2 class="eyebrow">Contact</h2>
+      <ul class="contact-links">
+        {
+          contacts.map((c) => (
+            <li>
+              <span class="contact-k">{c.k}</span>
+              <a
+                href={c.href}
+                {...(c.external
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+              >
+                {c.label}
+                {c.external && (
+                  <>
+                    <svg class="cs-ext" viewBox="0 0 16 16" aria-hidden="true">
+                      <path d="M5.5 4.5h6v6M11.5 4.5l-7 7" />
+                    </svg>
+                    <span class="vh"> (opens in a new tab)</span>
+                  </>
+                )}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
   </main>
 </Layout>
 
@@ -420,10 +557,10 @@ const testimonials = [
     margin: 0 auto;
     padding: 0 clamp(28px, 5vw, 88px) 0
       calc(var(--edge) + clamp(240px, 16vw, 268px));
-    color: #2a2724;
+    color: var(--ink);
   }
   .hero {
-    min-height: 88vh;
+    padding: 22vh 0 6vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -445,7 +582,7 @@ const testimonials = [
     line-height: 1.05;
     letter-spacing: -0.02em;
     margin: 0;
-    color: #cb5e3c;
+    color: var(--terracotta);
   }
   .tagline {
     font-family: var(--font-serif);
@@ -454,7 +591,7 @@ const testimonials = [
     letter-spacing: -0.01em;
     margin: 0;
     max-width: 40ch;
-    color: #2a2724;
+    color: var(--ink);
   }
   .meta {
     margin: 0;
@@ -472,9 +609,9 @@ const testimonials = [
     flex-direction: column;
     justify-content: center;
     padding: 10px 16px 12px;
-    border: 1px solid #e6ddcc;
+    border: 1px solid var(--hairline);
     border-radius: 12px;
-    background: #fdfbf6;
+    background: var(--surface);
     text-align: center;
   }
   dt {
@@ -482,12 +619,12 @@ const testimonials = [
     font-weight: 500;
     letter-spacing: 0.13em;
     text-transform: uppercase;
-    color: #a8451e;
+    color: var(--terracotta-ink);
     margin-bottom: 4px;
   }
   dd {
     margin: 0;
-    color: #2a2724;
+    color: var(--ink);
     font-weight: 500;
   }
   dd b {
@@ -497,7 +634,7 @@ const testimonials = [
     width: 9px;
     height: 9px;
     margin: 0 6px;
-    fill: #a8451e;
+    fill: var(--terracotta-ink);
     vertical-align: -1px;
   }
   .vh {
@@ -511,29 +648,22 @@ const testimonials = [
     white-space: nowrap;
     border: 0;
   }
-  .panel {
-    min-height: 42vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 6vh 0;
-  }
   .eyebrow {
     font-family: var(--font-sans);
     font-weight: 500;
     font-size: 13px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: #a8451e;
+    color: var(--terracotta-ink);
     margin: 0;
   }
 
   .case-studies {
-    padding: 9vh 0 7vh;
+    padding: 5vh 0 4vh;
   }
   .cs-grid {
     list-style: none;
-    margin: 44px 0 0;
+    margin: 32px 0 0;
     padding: 0;
     columns: 2;
     column-gap: clamp(20px, 3vw, 44px);
@@ -554,14 +684,14 @@ const testimonials = [
   }
   a.cs-link:hover .cs-thumb {
     transform: translateY(-3px);
-    box-shadow: 0 12px 28px rgba(42, 39, 36, 0.12);
+    box-shadow: 0 12px 28px var(--shadow);
   }
   a.cs-link:hover .cs-title {
     text-decoration: underline;
     text-underline-offset: 3px;
   }
   a.cs-link:focus-visible {
-    outline: 2px solid #2a2724;
+    outline: 2px solid var(--ink);
     outline-offset: 6px;
     border-radius: 16px;
   }
@@ -597,7 +727,7 @@ const testimonials = [
   }
 
   .cs-thumb.has-edge {
-    outline: 1px solid #e6ddcc;
+    outline: 1px solid var(--hairline);
     outline-offset: -1px;
   }
   .cs-logo {
@@ -608,7 +738,7 @@ const testimonials = [
     max-height: 56%;
     object-fit: contain;
   }
-  .cs-card.is-minor .cs-logo {
+  .cs-card.is-minor .cs-logo:not(.is-cover) {
     max-width: 50%;
   }
   .cs-logo.is-cover {
@@ -649,15 +779,141 @@ const testimonials = [
     font-size: clamp(17px, 1.7vw, 21px);
     line-height: 1.3;
     margin: 0;
-    color: #2a2724;
+    color: var(--ink);
     text-wrap: balance;
   }
   .cs-meta {
     font-family: var(--font-sans);
     font-size: 13px;
-    color: #6f6252;
+    color: var(--warm-grey);
     white-space: nowrap;
     flex: none;
+  }
+  .cs-caption-main {
+    min-width: 0;
+  }
+  .cs-client {
+    margin: 0 0 4px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--terracotta-ink);
+  }
+
+  .about {
+    padding: 5vh 0 4vh;
+  }
+  .about-grid {
+    display: grid;
+    grid-template-columns: minmax(180px, 280px) 1fr;
+    gap: clamp(28px, 4vw, 56px);
+    align-items: start;
+    margin-top: 32px;
+  }
+  .about-photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: 14px;
+  }
+  .about-copy p {
+    margin: 0 0 16px;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--ink);
+    max-width: 58ch;
+  }
+  .about-copy p:last-child {
+    margin-bottom: 0;
+  }
+  .about-copy .about-lead {
+    font-family: var(--font-serif);
+    font-size: clamp(20px, 2.2vw, 24px);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    margin-bottom: 20px;
+  }
+
+  .contact {
+    padding: 5vh 0 14vh;
+  }
+  .contact-links {
+    list-style: none;
+    margin: 32px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px clamp(32px, 5vw, 64px);
+  }
+  .contact-links li {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .contact-k {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--warm-grey);
+  }
+  .contact-links a {
+    font-family: var(--font-serif);
+    font-size: clamp(18px, 1.8vw, 22px);
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--underline);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  .contact-links a:hover {
+    color: var(--terracotta-ink);
+    text-decoration-color: currentColor;
+  }
+  .contact-links a:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  .cs-ext {
+    width: 0.8em;
+    height: 0.8em;
+    margin-left: 0.3em;
+    vertical-align: -0.02em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .cs-note {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--warm-grey);
+    white-space: nowrap;
+  }
+  .cs-pub {
+    display: block;
+    margin-top: 3px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--terracotta-ink);
+  }
+
+  @media (max-width: 760px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+    }
+    .about-photo {
+      max-width: 280px;
+    }
   }
 
   @media (max-width: 640px) {
@@ -682,13 +938,13 @@ const testimonials = [
 
 <style is:global>
   .testimonials {
-    padding: 9vh 0 7vh;
+    padding: 5vh 0 4vh;
   }
   .carousel {
     display: flex;
     align-items: flex-start;
     gap: clamp(12px, 2vw, 24px);
-    margin-top: 44px;
+    margin-top: 32px;
   }
   .car-viewport {
     flex: 1;
@@ -717,7 +973,7 @@ const testimonials = [
   }
   .t-bubble {
     position: relative;
-    background: #fdfbf6;
+    background: var(--surface);
     border: 1px solid var(--hairline);
     border-radius: 14px;
     padding: 20px 22px;
@@ -729,7 +985,7 @@ const testimonials = [
     left: 26px;
     width: 16px;
     height: 16px;
-    background: #fdfbf6;
+    background: var(--surface);
     border-left: 1px solid var(--hairline);
     border-bottom: 1px solid var(--hairline);
     border-radius: 0 0 0 4px;
@@ -743,7 +999,7 @@ const testimonials = [
     font-family: var(--font-sans);
     font-size: 15px;
     line-height: 1.65;
-    color: #2a2724;
+    color: var(--ink);
   }
   .testimonial figcaption {
     display: flex;
@@ -755,12 +1011,12 @@ const testimonials = [
     font-family: var(--font-serif);
     font-size: 15px;
     font-weight: 500;
-    color: #2a2724;
+    color: var(--ink);
   }
   .t-role {
     font-family: var(--font-sans);
     font-size: 13px;
-    color: #6f6252;
+    color: var(--warm-grey);
   }
   .car-arrow {
     flex: none;
@@ -771,7 +1027,7 @@ const testimonials = [
     border: none;
     border-radius: 8px;
     background: none;
-    color: #5e8e72;
+    color: var(--sage-ui);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -783,16 +1039,28 @@ const testimonials = [
     height: 32px;
   }
   .car-arrow:hover {
-    color: #466d57;
+    color: var(--sage-ui-hover);
   }
   .car-arrow:focus-visible {
-    outline: 2px solid #2a2724;
+    outline: 2px solid var(--ink);
     outline-offset: 2px;
   }
 
   @media (max-width: 640px) {
+    .carousel {
+      flex-wrap: wrap;
+      justify-content: center;
+      column-gap: 32px;
+    }
+    .car-viewport {
+      order: -1;
+      flex-basis: 100%;
+    }
     .car-track {
       flex-direction: column;
+    }
+    .car-arrow {
+      margin-top: 8px;
     }
   }
 </style>

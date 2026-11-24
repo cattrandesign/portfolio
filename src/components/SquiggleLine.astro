@@ -32,6 +32,8 @@ interface Props {
   progress?: number;
   /** CSS selector for an element the start (top) of the line should terminate on. */
   anchor?: string;
+  /** Finish the line at the anchor by drawing two overlapping circles (a Venn diagram). */
+  venn?: boolean;
   /** Extra class on the wrapper. */
   class?: string;
 }
@@ -53,6 +55,7 @@ const {
   resolveGap = 0,
   progress: forced,
   anchor,
+  venn = false,
   class: className = "",
 } = Astro.props;
 
@@ -84,6 +87,7 @@ const isRail = fixed && orientation === "vertical";
   data-resolve-gap={resolveGap}
   data-forced={forced}
   data-anchor={anchor}
+  data-venn={venn ? "" : undefined}
 >
   <svg
     preserveAspectRatio="none"
@@ -106,6 +110,20 @@ const isRail = fixed && orientation === "vertical";
           shape-rendering="geometricPrecision"
         />
       ))
+    }
+    {
+      venn &&
+        [0, 1].map(() => (
+          <path
+            class="squiggle-mark"
+            fill="none"
+            stroke={palette[palette.length - 1]}
+            stroke-width={weight}
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            vector-effect="non-scaling-stroke"
+          />
+        ))
     }
   </svg>
 </div>
@@ -154,6 +172,8 @@ const isRail = fixed && orientation === "vertical";
 </style>
 
 <script>
+  import { vennStroke, ctStrokes, smoothPath, type Pt } from "../lib/venn";
+
   type Strand = {
     phase: number;
     fMul: number;
@@ -179,6 +199,8 @@ const isRail = fixed && orientation === "vertical";
     progress: number;
     anchorSel: string | null;
     anchor: [number, number] | null;
+    vennOn: boolean;
+    vennPts: Pt[] | null;
   };
 
   const TAU = Math.PI * 2;
@@ -286,7 +308,9 @@ const isRail = fixed && orientation === "vertical";
       }
       pts.push([x, y]);
     }
-    return catmullRom(pts);
+    return catmullRom(
+      inst.vennPts ? [...inst.vennPts.slice(0, -1), ...pts] : pts,
+    );
   }
 
   function render(inst: Inst) {
@@ -307,14 +331,23 @@ const isRail = fixed && orientation === "vertical";
     const rect = inst.el.getBoundingClientRect();
     inst.startY = rect.top + (window.scrollY || window.pageYOffset || 0);
     inst.anchor = null;
+    inst.vennPts = null;
     if (inst.anchorSel) {
       const target = document.querySelector(inst.anchorSel);
       if (target) {
         const t = target.getBoundingClientRect();
-        inst.anchor = [
-          t.left + t.width / 2 - rect.left,
-          t.top + t.height / 2 - rect.top,
-        ];
+        const cx = t.left + t.width / 2 - rect.left;
+        const cy = t.top + t.height / 2 - rect.top;
+        inst.anchor = [cx, cy];
+        if (inst.vennOn) {
+          const r = (Math.min(t.width, t.height) / 2) * 0.88;
+          inst.vennPts = vennStroke({ cx, cy, r, seed: 3, jitter: 0.5, lead: 0.9 });
+          inst.anchor = inst.vennPts[inst.vennPts.length - 1];
+          const marks = inst.svg.querySelectorAll(".squiggle-mark");
+          ctStrokes({ cx, cy, size: r * 1.15 }).forEach((stroke, i) =>
+            marks[i]?.setAttribute("d", smoothPath(stroke)),
+          );
+        }
       }
     }
     inst.svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
@@ -340,7 +373,7 @@ const isRail = fixed && orientation === "vertical";
     const inst: Inst = {
       el,
       svg,
-      paths: Array.from(svg.querySelectorAll("path")),
+      paths: Array.from(svg.querySelectorAll("path:not(.squiggle-mark)")),
       strands: makeStrands(count),
       vertical: el.dataset.orientation === "vertical",
       track: el.dataset.track || "self",
@@ -356,6 +389,8 @@ const isRail = fixed && orientation === "vertical";
       progress: 0,
       anchorSel: el.dataset.anchor || null,
       anchor: null,
+      vennOn: el.dataset.venn !== undefined,
+      vennPts: null,
     };
 
     const forced = el.dataset.forced;

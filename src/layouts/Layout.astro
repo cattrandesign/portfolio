@@ -10,12 +10,11 @@ const {
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -39,10 +38,46 @@ const {
 		--edge: clamp(24px, 4vw, 72px);
 		--paper: #f8f4ed;
 		--ink: #2a2724;
+		--body-text: #38332e;
 		--terracotta: #cb5e3c;
 		--terracotta-ink: #a8451e;
 		--warm-grey: #6f6252;
 		--hairline: #e6ddcc;
+		--surface: #fdfbf6;
+		--sage-ui: #5e8e72;
+		--sage-ui-hover: #466d57;
+		--underline: #c9bfae;
+		--nav-glass: rgba(248, 244, 237, 0.92);
+		--shadow: rgba(42, 39, 36, 0.12);
+	}
+	:root[data-theme="dark"] {
+		--paper: #1a1816;
+		--ink: #f3ede4;
+		--body-text: #e2dbd0;
+		--terracotta: #d4918e;
+		--terracotta-ink: #d4918e;
+		--warm-grey: #8cc49f;
+		--hairline: #3a3530;
+		--surface: #262320;
+		--sage-ui: #8cc49f;
+		--sage-ui-hover: #addbbd;
+		--underline: #5e564c;
+		--nav-glass: rgba(26, 24, 22, 0.88);
+		--shadow: rgba(0, 0, 0, 0.35);
+		color-scheme: dark;
+	}
+	/* Light cards (diagrams, the sandbox) keep the light palette inside them. */
+	.light-surface {
+		--paper: #f8f4ed;
+		--ink: #2a2724;
+		--body-text: #38332e;
+		--terracotta: #cb5e3c;
+		--terracotta-ink: #a8451e;
+		--warm-grey: #6f6252;
+		--hairline: #e6ddcc;
+		--surface: #fdfbf6;
+		color: var(--ink);
+		color-scheme: light;
 	}
 	@media (max-width: 640px) {
 		:root {

@@ -2,9 +2,15 @@
 import CaseStudy from "../../layouts/CaseStudy.astro";
 
 const facts = [
-  { k: "Role", v: "Product Designer" },
+  { k: "Role", v: "Product Designer · Full-time" },
   { k: "Focus", v: "Design systems, component architecture" },
-  { k: "Year", v: "2026, abstracted" },
+  { k: "Year", v: "2026" },
+];
+
+const stats = [
+  { v: "45k+", k: "providers" },
+  { v: "20M+", k: "clients" },
+  { v: "200+", k: "total call sites in production" },
 ];
 
 const auditQuestions = [
@@ -19,25 +25,43 @@ const auditQuestions = [
 ---
 
 <CaseStudy
-  title="Piloting an AI-native design system workflow from spec to production code on an enterprise system serving 29 million end users · Cat Tran"
+  title="Piloting an AI-native design system workflow from spec to production code · Cat Tran"
   description="Researching, prototyping, and shipping my team's first designer-built production component, plus the eight-month-old token bug I found along the way."
-  client="Enterprise app"
-  heading="Piloting an AI-native design system workflow from spec to production code on an enterprise system serving 29 million end users"
+  client="Enterprise healthcare app"
+  heading="Piloting an AI-native design system workflow from spec to production code"
   lede="Using an inline banner component as the pilot, I used Claude Code to conduct industry research, audit our web repo for use cases, build an app to facilitate collaborative iteration, and worked with frontend to merge and migrate into production via Storybook."
   facts={facts}
+  locked
 >
+  <ul class="stats">
+    {
+      stats.map((s) => (
+        <li>
+          <span class="stat-v">{s.v}</span>
+          <span class="stat-k">{s.k}</span>
+        </li>
+      ))
+    }
+  </ul>
+
   <section>
     <h2 class="eyebrow">Context</h2>
     <p>
-      No designer on my team had taken a component from spec into production
-      code before. I picked the inline banner as the pilot: small, but used
-      everywhere, which made it a real test of owning the whole pipeline,
-      research through shipped code.
+      I've been leading the creation and implementation of our new design
+      system from the design side. I picked the inline banner as the pilot:
+      small, but used everywhere, which made it a real test of owning the
+      whole pipeline, from research through shipped code.
+    </p>
+    <p>
+      The pilot made me the first non-engineer to merge code into our
+      codebase, and the banners became the first components from the new
+      design system to be fully migrated into our platform. As of November
+      2026, I've merged 53 PRs into the design system.
     </p>
   </section>
 
   <section>
-    <h2 class="eyebrow">Learning from what exists</h2>
+    <h2 class="eyebrow">Pattern research</h2>
     <p>
       Rather than start from a blank canvas, I looked at how GitHub, Atlassian,
       Adobe, and IBM handle the same pattern, sometimes called an alert,
@@ -45,6 +69,113 @@ const auditQuestions = [
       then had it recreate each pattern inside a real surface from our own app,
       so I could judge the options in our actual UI instead of in isolation.
     </p>
+    <p>
+      The responsive behavior follows Primer, GitHub's design system: at full
+      width the primary action sits on the right, and in narrower containers
+      the actions move left and wrap below the text.
+    </p>
+    <figure class="shot">
+      <svg
+        class="diagram"
+        viewBox="0 0 680 296"
+        role="img"
+        aria-labelledby="banner-t banner-d"
+      >
+        <title id="banner-t">Banner anatomy across widths</title>
+        <desc id="banner-d">
+          A generic recreation of the banner component: an icon, optional
+          header, body text, a dismiss control, and one or two CTAs. At full
+          width the primary CTA aligns right; at partial width it aligns left
+          and wraps below the text.
+        </desc>
+
+        <text
+          x="20"
+          y="22"
+          font-size="11"
+          font-weight="600"
+          letter-spacing="0.08em"
+          fill="#A8451E">FULL WIDTH</text>
+        <rect
+          x="20"
+          y="34"
+          width="640"
+          height="60"
+          rx="10"
+          fill="#F1ECDD"
+          stroke="#E6DDCC"></rect>
+        <circle cx="48" cy="64" r="9" fill="none" stroke="#2A2724" stroke-width="1.25"
+        ></circle>
+        <rect x="70" y="52" width="150" height="8" rx="4" fill="#6F6252"></rect>
+        <rect x="70" y="66" width="240" height="7" rx="3.5" fill="#D9D0BE"
+        ></rect>
+        <g stroke="#2A2724" stroke-width="1.4" stroke-linecap="round">
+          <line x1="638" y1="44" x2="646" y2="52"></line>
+          <line x1="646" y1="44" x2="638" y2="52"></line>
+        </g>
+        <rect x="458" y="53" width="72" height="22" rx="6" fill="none"
+        stroke="#2A2724" stroke-width="1.25"></rect>
+        <text x="494" y="67" font-size="10.5" fill="#2A2724" text-anchor="middle"
+          >Cancel</text
+        >
+        <rect x="538" y="53" width="90" height="22" rx="6" fill="#A8451E"></rect>
+        <text
+          x="583"
+          y="67"
+          font-size="10.5"
+          fill="#FFFFFF"
+          font-weight="600"
+          text-anchor="middle">Primary</text>
+        <text x="20" y="112" font-size="11" fill="#6F6252">
+          Primary CTA aligns right
+        </text>
+
+        <text
+          x="20"
+          y="150"
+          font-size="11"
+          font-weight="600"
+          letter-spacing="0.08em"
+          fill="#A8451E">PARTIAL WIDTH</text>
+        <rect
+          x="20"
+          y="162"
+          width="330"
+          height="96"
+          rx="10"
+          fill="#F1ECDD"
+          stroke="#E6DDCC"></rect>
+        <circle cx="48" cy="192" r="9" fill="none" stroke="#2A2724" stroke-width="1.25"
+        ></circle>
+        <rect x="70" y="180" width="140" height="8" rx="4" fill="#6F6252"></rect>
+        <rect x="70" y="194" width="200" height="7" rx="3.5" fill="#D9D0BE"
+        ></rect>
+        <g stroke="#2A2724" stroke-width="1.4" stroke-linecap="round">
+          <line x1="326" y1="172" x2="334" y2="180"></line>
+          <line x1="334" y1="172" x2="326" y2="180"></line>
+        </g>
+        <rect x="70" y="220" width="84" height="22" rx="6" fill="#A8451E"></rect>
+        <text
+          x="112"
+          y="234"
+          font-size="10.5"
+          fill="#FFFFFF"
+          font-weight="600"
+          text-anchor="middle">Primary</text>
+        <rect x="162" y="220" width="72" height="22" rx="6" fill="none"
+        stroke="#2A2724" stroke-width="1.25"></rect>
+        <text x="198" y="234" font-size="10.5" fill="#2A2724" text-anchor="middle"
+          >Cancel</text
+        >
+        <text x="20" y="280" font-size="11" fill="#6F6252">
+          Primary CTA aligns left, CTAs wrap below the text
+        </text>
+      </svg>
+      <figcaption>
+        A generic recreation, not the real UI. The same responsive rule
+        applies to both the inline and global banners.
+      </figcaption>
+    </figure>
   </section>
 
   <section>
@@ -57,7 +188,7 @@ const auditQuestions = [
       review instead of reacting to static comps.
     </p>
     <figure class="shot">
-      <div class="sandbox-demo">
+      <div class="sandbox-demo light-surface">
         <form class="sandbox-controls" aria-label="Banner sandbox controls">
           <div class="sandbox-field">
             <label for="sb-radius">Corner radius</label>
@@ -173,191 +304,83 @@ const auditQuestions = [
   <section>
     <h2 class="eyebrow">Challenge 1</h2>
     <p>
-      We'd originally planned to drop the success variant in favor of a toast
-      pattern we barely used. Engineers pushed back: building a toast
-      component and migrating every success banner to it was a much bigger
-      project on its own, and folding it into this migration risked leaving
-      some banners in the old pattern. We kept success for a 1:1 migration and
-      left the platform-wide change for later.
+      We planned to drop the success variant for a toast pattern we barely
+      used. Engineers pushed back: building toasts and migrating every success
+      banner was its own project, and bundling it in risked stranding banners
+      in the old pattern. We kept success for a 1:1 migration and saved toasts
+      for later.
     </p>
   </section>
 
   <section>
     <h2 class="eyebrow">Challenge 2</h2>
     <p>
-      Since I'm not an engineer, frontend built guardrails around my PRs so
-      they could ship without becoming a bottleneck. They wrote a Claude
-      Skill that checked any PR against our repo's actual conventions
-      before a human ever looked at it, and tagged my PRs with a quarantine
-      label so reviewers knew to look closer until we'd ironed out the
-      pattern together.
+      Frontend built guardrails so my PRs could ship without becoming a
+      bottleneck: a Claude Skill that checked every PR against our repo's
+      conventions, and a quarantine label so reviewers knew to look closer.
     </p>
     <p>
-      Once it passed review, engineers ran a Chromatic audit simulating the new
-      component across a large share of the site's banners. It surfaced
-      something unplanned: engineers had been using inline and global banners
-      interchangeably, with no shared rule for when each applied. That pushed
-      us to finish the global banner and ship both together.
+      After review, engineers ran a Chromatic audit across a large share of
+      the site's banners. It surfaced a surprise: inline and global banners
+      had been used interchangeably, with no rule for either. We audited the
+      codebase and set one: a banner inside a container is inline, and a
+      banner outside one is global. A universal find and replace then fixed
+      the misuse as part of the migration, and we finished the global banner
+      and shipped both together.
     </p>
     <p>
-      Shipping them together worked because of a call I'd made early on.
-      Inline and global have completely different usage guidelines, so they
-      stayed as two separate components, but I designed the global banner to
-      render identically to how the inline banner looks at that same width:
-      same anatomy, same responsive alignment rule. If anyone migrated a
-      banner to the wrong one, the mistake would produce a zero visual diff
-      in Chromatic, instead of a flag that just gets overridden.
+      That was safe because of an early call. The two have different usage
+      guidelines, so they stayed separate components, but I designed the
+      global banner to render identically to the inline one at the same
+      width. Migrating a banner to the wrong one would produce a zero visual
+      diff, not a flag someone overrides.
     </p>
-    <figure class="shot">
-      <svg
-        class="diagram"
-        viewBox="0 0 680 296"
-        role="img"
-        aria-labelledby="banner-t banner-d"
-      >
-        <title id="banner-t">Banner anatomy across widths</title>
-        <desc id="banner-d">
-          A generic recreation of the banner component: an icon, optional
-          header, body text, a dismiss control, and one or two CTAs. At full
-          width the primary CTA aligns right; at partial width it aligns left
-          and wraps below the text.
-        </desc>
-
-        <text
-          x="20"
-          y="22"
-          font-size="11"
-          font-weight="600"
-          letter-spacing="0.08em"
-          fill="#A8451E">FULL WIDTH</text>
-        <rect
-          x="20"
-          y="34"
-          width="640"
-          height="60"
-          rx="10"
-          fill="#F1ECDD"
-          stroke="#E6DDCC"></rect>
-        <circle cx="48" cy="64" r="9" fill="none" stroke="#2A2724" stroke-width="1.25"
-        ></circle>
-        <rect x="70" y="52" width="150" height="8" rx="4" fill="#6F6252"></rect>
-        <rect x="70" y="66" width="240" height="7" rx="3.5" fill="#D9D0BE"
-        ></rect>
-        <g stroke="#2A2724" stroke-width="1.4" stroke-linecap="round">
-          <line x1="638" y1="44" x2="646" y2="52"></line>
-          <line x1="646" y1="44" x2="638" y2="52"></line>
-        </g>
-        <rect x="458" y="53" width="72" height="22" rx="6" fill="none"
-        stroke="#2A2724" stroke-width="1.25"></rect>
-        <text x="494" y="67" font-size="10.5" fill="#2A2724" text-anchor="middle"
-          >Cancel</text
-        >
-        <rect x="538" y="53" width="90" height="22" rx="6" fill="#A8451E"></rect>
-        <text
-          x="583"
-          y="67"
-          font-size="10.5"
-          fill="#FFFFFF"
-          font-weight="600"
-          text-anchor="middle">Primary</text>
-        <text x="20" y="112" font-size="11" fill="#6F6252">
-          Primary CTA aligns right
-        </text>
-
-        <text
-          x="20"
-          y="150"
-          font-size="11"
-          font-weight="600"
-          letter-spacing="0.08em"
-          fill="#A8451E">PARTIAL WIDTH</text>
-        <rect
-          x="20"
-          y="162"
-          width="330"
-          height="96"
-          rx="10"
-          fill="#F1ECDD"
-          stroke="#E6DDCC"></rect>
-        <circle cx="48" cy="192" r="9" fill="none" stroke="#2A2724" stroke-width="1.25"
-        ></circle>
-        <rect x="70" y="180" width="140" height="8" rx="4" fill="#6F6252"></rect>
-        <rect x="70" y="194" width="200" height="7" rx="3.5" fill="#D9D0BE"
-        ></rect>
-        <g stroke="#2A2724" stroke-width="1.4" stroke-linecap="round">
-          <line x1="326" y1="172" x2="334" y2="180"></line>
-          <line x1="334" y1="172" x2="326" y2="180"></line>
-        </g>
-        <rect x="70" y="220" width="84" height="22" rx="6" fill="#A8451E"></rect>
-        <text
-          x="112"
-          y="234"
-          font-size="10.5"
-          fill="#FFFFFF"
-          font-weight="600"
-          text-anchor="middle">Primary</text>
-        <rect x="162" y="220" width="72" height="22" rx="6" fill="none"
-        stroke="#2A2724" stroke-width="1.25"></rect>
-        <text x="198" y="234" font-size="10.5" fill="#2A2724" text-anchor="middle"
-          >Cancel</text
-        >
-        <text x="20" y="280" font-size="11" fill="#6F6252">
-          Primary CTA aligns left, CTAs wrap below the text
-        </text>
-      </svg>
-      <figcaption>
-        A generic recreation, not the real UI. Same anatomy, shared by both
-        components on purpose.
-      </figcaption>
-    </figure>
     <p>
-      I reviewed roughly a hundred Chromatic diffs. Production still surprised
-      us afterward: a conditional banner with a long message doesn't show up in
-      a diff if the condition isn't met, so some text ran bigger than we wanted
-      until we saw it live. Even a hundred diffs don't show the whole picture.
+      I reviewed about a hundred diffs, and production still surprised us: a
+      conditional banner with long copy never shows up in a diff if its
+      condition isn't met.
     </p>
   </section>
 
   <section>
     <h2 class="eyebrow">Challenge 3</h2>
     <p>
-      While this was in flight, spacing across the product kept looking
-      slightly bigger than expected, in enough places that people assumed it
-      was just how things looked now. Claude Code helped me trace it to a
-      custom spacing scale quietly overriding our Tailwind scale, introduced
-      eight months earlier in an unreviewed PR by an engineer who had since
-      left. It wasn't a clean offset: depending on the value, it inflated
-      spacing by 2, 4, or 12 pixels.
+      Meanwhile, spacing across the product kept looking slightly too big.
+      With Claude Code, I traced it to a custom spacing scale overriding our
+      Tailwind scale, added eight months earlier in an unreviewed PR.
+      Depending on the value, it inflated spacing by 2, 4, or 12 pixels.
     </p>
     <p>
-      Correcting the token itself would have rewritten the pixel values of
-      every component already merged onto our design system, not just the
-      ones still waiting to migrate onto it. Another engineer removed the
-      custom scale as a zero-diff change: he made sure nothing broke
-      overnight. From there, I opened a few more PRs to adjust the tokens
-      and put every button on a proper
-      spacing ramp, sized using research into how other systems scaled
-      theirs, and added a migration-only variant so a component moving onto
-      the corrected ramp could do so with zero visual diff first, leaving
-      where it actually landed on the new ramp as a separate decision for
-      later.
+      Fixing the token outright would have shifted every component already
+      on the system. Another engineer removed the custom scale as a zero-diff
+      change. I followed with PRs that adjusted the tokens and put every
+      button on a proper spacing ramp, based on how other systems scale
+      theirs, plus a migration-only variant so components could move onto the
+      new ramp with zero visual diff and get resized later.
     </p>
     <p>
-      Raising it unblocked a lot of stalled work, including the CTA buttons
-      inside the banners I had just built. Bugs like that are easy to miss
-      because they don't just affect a component, they affect everything
-      nested inside it.
+      Raising it unblocked a lot of stalled work, including the CTA buttons in
+      my own banners.
     </p>
   </section>
 
   <section>
     <h2 class="eyebrow">What I took from it</h2>
     <p>
-      This is the case for a designer owning the whole pipeline instead of
-      handing off at high-fidelity comps. Researching, prototyping against real
-      tokens, auditing usage, then building and shipping it myself meant
-      nothing got lost in translation, and it put me in the right position to
-      catch a bug that had nothing to do with the banner at all.
+      Working directly in GitHub and our codebase taught me a lot about the
+      engineering workflow, from reading code comments to remembering to
+      rebase my PRs when they went stale.
+    </p>
+    <p>
+      None of it would have been possible without a deeply collaborative
+      frontend team. They built the Claude Skills and governance that reduced
+      the risk of a non-engineer shipping code, and together we set up
+      workflows for constant communication so we could respond to each other
+      quickly.
+    </p>
+    <p>
+      My biggest takeaway: how fast a team can move comes down to governance,
+      communication, and shared standards.
     </p>
   </section>
 </CaseStudy>

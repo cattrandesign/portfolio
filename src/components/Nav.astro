@@ -1,7 +1,7 @@
 ---
 const links = [
   { href: "/#case-studies", label: "Case studies" },
-  { href: "/#testimonials", label: "Testimonials" },
+  { href: "/#nice-words", label: "Nice words" },
   { href: "/#about", label: "About" },
   { href: "/#contact", label: "Contact" },
 ];
@@ -10,9 +10,7 @@ const links = [
 <a class="skip" href="#main">Skip to content</a>
 
 <nav aria-label="Primary">
-  <a class="logo" href="/" aria-label="Cat Tran, home">
-    <span aria-hidden="true">ct</span>
-  </a>
+  <a class="logo" href="/" aria-label="Cat Tran, home"></a>
 
   <ul class="nav-group">
     {
@@ -31,8 +29,8 @@ const links = [
     left: 16px;
     top: -48px;
     z-index: 20;
-    background: #2a2724;
-    color: #f8f4ed;
+    background: var(--ink);
+    color: var(--paper);
     padding: 8px 14px;
     border-radius: 6px;
     font-family: var(--font-sans);
@@ -62,7 +60,7 @@ const links = [
     margin: 0;
     padding: 11px 20px;
     list-style: none;
-    background: rgba(248, 244, 237, 0.92);
+    background: var(--nav-glass);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-radius: 999px;
@@ -72,7 +70,7 @@ const links = [
     white-space: nowrap;
   }
   .nav-group a {
-    color: #2a2724;
+    color: var(--ink);
     font-size: 15px;
   }
   .nav-group a:hover {
@@ -84,19 +82,13 @@ const links = [
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 56px;
+    height: 47px;
     flex: none;
-    background: #72a085;
-    border-radius: 50%;
-    font-family: var(--font-serif);
-    font-size: 17px;
-    letter-spacing: 0.03em;
-    color: #2a2724;
   }
   nav a:focus-visible,
   .skip:focus-visible {
-    outline: 2px solid #2a2724;
+    outline: 2px solid var(--ink);
     outline-offset: 4px;
     border-radius: 2px;
   }

@@ -1,0 +1,83 @@
+---
+import { vennStroke, smoothPath } from "../lib/venn";
+
+interface Props {
+  variant?: number;
+}
+
+const { variant = 0 } = Astro.props;
+const seed = 11 + variant * 7;
+const path = smoothPath(
+  vennStroke({ cx: 22, cy: 15, r: 11, seed, time: seed }),
+  true,
+);
+---
+
+<div class="venn-divider" aria-hidden="true">
+  <svg viewBox="0 0 44 34">
+    <path
+      class="venn-ring"
+      d={path}
+      data-seed={seed}
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.4"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      vector-effect="non-scaling-stroke"></path>
+  </svg>
+</div>
+
+<style>
+  .venn-divider {
+    display: flex;
+    justify-content: center;
+    padding: 2vh 0;
+  }
+  .venn-divider svg {
+    display: block;
+    width: 88px;
+    height: 68px;
+    overflow: visible;
+  }
+</style>
+
+<script>
+  import { vennStroke, smoothPath } from "../lib/venn";
+
+  const svgs = [...document.querySelectorAll<SVGSVGElement>(".venn-divider svg")];
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (svgs.length && !reduced) {
+    const items = svgs.map((svg) => {
+      const ring = svg.querySelector(".venn-ring") as SVGPathElement;
+      return { svg, ring, seed: Number(ring.dataset.seed) };
+    });
+    const visible = new Set<(typeof items)[number]>();
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        const item = items.find((it) => it.svg === e.target);
+        if (!item) continue;
+        if (e.isIntersecting) visible.add(item);
+        else visible.delete(item);
+      }
+    });
+    items.forEach((it) => io.observe(it.svg));
+
+    const start = performance.now();
+    const tick = (now: number) => {
+      const time = ((now - start) / 1000) * 2.6;
+      for (const it of visible) {
+        it.ring.setAttribute(
+          "d",
+          smoothPath(
+            vennStroke({ cx: 22, cy: 15, r: 11, seed: it.seed, time: time + it.seed }),
+            true,
+          ),
+        );
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+</script>

@@ -10,9 +10,11 @@ interface Props {
   heading: string;
   lede: string;
   facts: { k: string; v: string }[];
+  locked?: boolean;
 }
 
-const { title, description, client, heading, lede, facts } = Astro.props;
+const { title, description, client, heading, lede, facts, locked } =
+  Astro.props;
 ---
 
 <Layout title={title} description={description}>
@@ -28,8 +30,9 @@ const { title, description, client, heading, lede, facts } = Astro.props;
     reach={0.12}
     loops={4.4}
     strands={1}
-    colors={["#2A2724"]}
+    colors={["currentColor"]}
     anchor=".logo"
+    venn
   />
 
   <main id="main" class="cs">
@@ -38,25 +41,93 @@ const { title, description, client, heading, lede, facts } = Astro.props;
     <header class="cs-header">
       <p class="cs-client">{client}</p>
       <h1>{heading}</h1>
-      <p class="cs-lede" set:html={lede} />
     </header>
 
-    <dl class="facts">
-      {
-        facts.map((f) => (
-          <div>
-            <dt>{f.k}</dt>
-            <dd>{f.v}</dd>
+    {
+      locked && (
+        <form class="cs-gate" id="cs-gate" novalidate>
+          <label for="cs-gate-input">
+            This case study is password protected.
+          </label>
+          <div class="cs-gate-row">
+            <input
+              id="cs-gate-input"
+              type="password"
+              autocomplete="off"
+              required
+            />
+            <button type="submit">Unlock</button>
           </div>
-        ))
-      }
-    </dl>
+          <p class="cs-gate-error" id="cs-gate-error" role="alert" />
+        </form>
+      )
+    }
 
-    <slot />
+    <div class="cs-body" id="cs-body" hidden={locked}>
+      <p class="cs-lede" set:html={lede} />
+
+      <dl class="facts">
+        {
+          facts.map((f) => (
+            <div>
+              <dt>{f.k}</dt>
+              <dd>{f.v}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <slot />
+    </div>
 
     <a class="back back-end" href="/#case-studies">&larr; All case studies</a>
   </main>
 </Layout>
+
+{
+  locked && (
+    <script is:inline>
+      const PASSWORD_HASH =
+        "6191d3281e4c01513b75ed17dc264b3abddc5ebf1f6d59d77d3c6b386223b81e";
+      const STORAGE_KEY = "cs-unlocked";
+
+      const gate = document.getElementById("cs-gate");
+      const input = document.getElementById("cs-gate-input");
+      const error = document.getElementById("cs-gate-error");
+      const body = document.getElementById("cs-body");
+
+      function unlock() {
+        gate.remove();
+        body.hidden = false;
+      }
+
+      async function sha256(text) {
+        const bytes = new TextEncoder().encode(text);
+        const digest = await crypto.subtle.digest("SHA-256", bytes);
+        return [...new Uint8Array(digest)]
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+      }
+
+      try {
+        if (sessionStorage.getItem(STORAGE_KEY) === PASSWORD_HASH) unlock();
+      } catch {}
+
+      gate?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if ((await sha256(input.value)) === PASSWORD_HASH) {
+          try {
+            sessionStorage.setItem(STORAGE_KEY, PASSWORD_HASH);
+          } catch {}
+          unlock();
+        } else {
+          error.textContent = "That password didn't work. Try again.";
+          input.select();
+        }
+      });
+    </script>
+  )
+}
 
 <style is:global>
   .cs {
@@ -117,6 +188,62 @@ const { title, description, client, heading, lede, facts } = Astro.props;
     margin: 18px 0 0;
   }
 
+  .cs .cs-gate {
+    margin: 32px 0 0;
+    padding: 24px;
+    max-width: 440px;
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    background: var(--surface);
+  }
+  .cs .cs-gate label {
+    display: block;
+    margin-bottom: 12px;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .cs .cs-gate-row {
+    display: flex;
+    gap: 10px;
+  }
+  .cs .cs-gate input {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--warm-grey);
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .cs .cs-gate input:focus-visible,
+  .cs .cs-gate button:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+  .cs .cs-gate button {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--terracotta-ink);
+    background: var(--terracotta-ink);
+    color: var(--paper);
+    cursor: pointer;
+  }
+  .cs .cs-gate-error {
+    margin: 10px 0 0;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--terracotta-ink);
+  }
+  .cs .cs-gate-error:empty {
+    display: none;
+  }
+
   .cs .facts {
     display: grid;
     gap: 14px;
@@ -157,7 +284,7 @@ const { title, description, client, heading, lede, facts } = Astro.props;
   }
   .cs section p {
     margin: 0 0 16px;
-    color: #38332e;
+    color: var(--body-text);
   }
   .cs section p:last-child {
     margin-bottom: 0;
@@ -169,7 +296,7 @@ const { title, description, client, heading, lede, facts } = Astro.props;
   .cs section ol {
     margin: 0 0 16px;
     padding-left: 22px;
-    color: #38332e;
+    color: var(--body-text);
   }
   .cs section li {
     margin: 0 0 10px;
@@ -203,7 +330,7 @@ const { title, description, client, heading, lede, facts } = Astro.props;
     background: var(--tint, #e7dacd);
     font-family: var(--font-serif);
     font-size: 15px;
-    color: var(--ink);
+    color: #2a2724;
   }
   .cs .shot .diagram {
     display: block;
@@ -254,7 +381,7 @@ const { title, description, client, heading, lede, facts } = Astro.props;
     padding: 16px;
     border: 1px solid var(--hairline);
     border-radius: 12px;
-    background: #fdfbf6;
+    background: var(--surface);
   }
   .cs .stat-v {
     display: block;
