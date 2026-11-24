@@ -13,6 +13,18 @@ const meta = [
   },
 ];
 
+// Logos sit in one row, drawn as ink silhouettes. Heights are tuned per mark
+// so they read at a similar visual weight.
+const brands = [
+  { name: "Meta", src: "/brands/meta.svg", width: 948, height: 191, h: 20 },
+  { name: "Zapier", src: "/brands/zapier.svg", width: 500, height: 229, h: 30 },
+  { name: "NYU Langone Health", src: "/brands/nyu-langone.png", width: 400, height: 169, h: 34 },
+  { name: "Healthie", src: "/brands/healthie.svg", width: 122, height: 18, h: 16 },
+  { name: "866 Our Vote", src: "/brands/866-our-vote.png", width: 439, height: 364, h: 40 },
+  { name: "Trestle Collaborative", src: "/brands/trestle.svg", width: 208, height: 30, h: 19 },
+  { name: "Texas Civil Rights Project", src: "/brands/tcrp.png", width: 1788, height: 747, h: 36 },
+];
+
 const caseStudies = [
   {
     client: "Enterprise healthcare app",
@@ -61,7 +73,14 @@ const caseStudies = [
     title: "Rethinking the admin information architecture and design system",
     meta: "2021",
     tint: "#FFFFFF",
-    logo: { src: "/logos/kettle.png", width: 410, height: 120, edge: true },
+    logo: {
+      src: "/logos/kettle-ia.svg",
+      alt: "KettleOS information architecture diagram",
+      width: 1288,
+      height: 644,
+      cover: true,
+      edge: true,
+    },
   },
   {
     client: "Instagram",
@@ -220,9 +239,7 @@ const testimonials = [
                     {i > 0 && (
                       <>
                         <span class="vh">, </span>
-                        <svg class="sep" viewBox="0 0 32 29" aria-hidden="true">
-                          <path d="M16 27C16 27 2.5 18.5 2.5 9.5C2.5 4.8 6 2 9.8 2C12.7 2 15 4 16 6.2C17 4 19.3 2 22.2 2C26 2 29.5 4.8 29.5 9.5C29.5 18.5 16 27 16 27Z" />
-                        </svg>
+                        <span class="sep" aria-hidden="true" />
                       </>
                     )}
                     <b>{p}</b>
@@ -233,6 +250,22 @@ const testimonials = [
           ))
         }
       </dl>
+
+      <ul class="brands" aria-label="Places I've worked">
+        {
+          brands.map((b) => (
+            <li>
+              <img
+                src={b.src}
+                alt={b.name}
+                width={b.width}
+                height={b.height}
+                style={`height:${b.h}px`}
+              />
+            </li>
+          ))
+        }
+      </ul>
     </section>
 
     <VennDivider variant={0} />
@@ -631,11 +664,29 @@ const testimonials = [
     font-weight: 500;
   }
   .sep {
-    width: 9px;
-    height: 9px;
-    margin: 0 6px;
-    fill: var(--terracotta-ink);
-    vertical-align: -1px;
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    margin: 0 8px;
+    border-radius: 50%;
+    background: var(--terracotta-ink);
+    vertical-align: middle;
+  }
+  .brands {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px clamp(24px, 3vw, 40px);
+  }
+  .brands img {
+    display: block;
+    width: auto;
+    filter: brightness(0);
+    opacity: 0.55;
   }
   .vh {
     position: absolute;
